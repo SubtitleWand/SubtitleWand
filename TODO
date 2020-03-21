@@ -1,0 +1,7 @@
+1. 以一行空行做分割 a\n\nb 這樣管控
+2. Shadow 還需要分割屬性 X Y offset, Spread, Blur
+3. 分門別類搞成 dialog 設定屬性 右邊顯示屬性
+
+4. 開一個 github version 管控新版本
+5. bitly 管控連結, (廣告跟非廣告連結)
+6. 自動化上傳

@@ -1,0 +1,8 @@
+1. 下載 flutter-desktop-embedding-master.zip
+2. 解壓把 example 拿出
+3. hover init
+4. hover run 會直接把 main.dart 轉移成功可改
+
+?1. 如何改 packagename, yaml 改好找 package:example_flutter 取代為 pacakge:your_package_name
+?1: 如何改 icon 覆蓋 go asset 即可 (新版修復) executable的參考 https://gitlab.com/gozoo/rc-demo 操作在 cmd main.go 旁邊
+?2: 如何改...
