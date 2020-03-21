@@ -4,13 +4,13 @@ import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:subtitle_wand/color_palette.dart';
-import 'package:subtitle_wand/main_desktop.dart';
-import 'package:subtitle_wand/model/font_manager.dart';
+import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
+import 'package:subtitle_wand/pages/main.dart';
+import 'package:subtitle_wand/utilities/font_manager.dart';
 
-import 'model/subtitle_panel.dart';
 
 abstract class MainPageEvent extends Equatable {
 }
@@ -245,7 +245,7 @@ class MainPageState extends Equatable {
       propertyCanvasResolutionX: 1920,
       propertyCanvasResolutionY: 1080,
       propertyCanvasBackgroundColor: ColorPalette.secondaryColor,
-      propertySubtitleTexts: new List<String>(),
+      propertySubtitleTexts: List<String>(),
       currentFrame: 0,
     );
   }
@@ -273,7 +273,7 @@ class MainPageState extends Equatable {
     List<String> propertySubtitleTexts,
     int currentFrame,
   }) {
-    return new MainPageState._(
+    return MainPageState._(
       propertyPaddingLeft: propertyPaddingLeft ?? this.propertyPaddingLeft,
       propertyPaddingRight: propertyPaddingRight ?? this.propertyPaddingRight,
       propertyPaddingTop: propertyPaddingTop ?? this.propertyPaddingTop,
@@ -448,8 +448,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   }
   Stream<MainPageState> _mapPropertyFontTtfEventToState(PropertyFontTtfEvent event) async* {
     try {
-      if(_fontManager.contains(event.fontPath))
-        return;
+      if(_fontManager.contains(event.fontPath)) return;
       await _fontManager.addFont(event.fontPath.toLowerCase(), event.fontPath);
       yield state.copyWith(
         propertyFontFamily: event.fontPath

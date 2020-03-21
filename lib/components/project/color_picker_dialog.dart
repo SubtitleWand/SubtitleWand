@@ -17,7 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:subtitle_wand/color_palette.dart';
+import 'package:subtitle_wand/design/color_palette.dart';
 
 class ColorPickerDialog extends StatefulWidget {
   final Color initColor;

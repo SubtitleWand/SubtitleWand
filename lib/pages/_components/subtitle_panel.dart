@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 import 'dart:math' as Math;
-import 'package:subtitle_wand/color_palette.dart';
+import 'dart:ui';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:subtitle_wand/design/color_palette.dart';
 
 class SubtitlePanel extends StatefulWidget {
   final SubtitlePainter _painter;
@@ -33,7 +34,7 @@ class SubtitlePanel extends StatefulWidget {
 class _SubtitlePanelState extends State<SubtitlePanel> {
   SubtitlePainter _painter;
   ScrollController _scaleScroller;
-  Offset _translation = new Offset(0, 0);
+  Offset _translation = Offset(0, 0);
   bool isTapped = false;
 
   @override
@@ -41,7 +42,7 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
     super.initState();
     _painter = widget._painter;
     _painter.update(span: widget._span, canvasResolution: widget._canvasResolution);
-    _scaleScroller = new ScrollController(initialScrollOffset: 0);
+    _scaleScroller = ScrollController(initialScrollOffset: 0);
     _scaleScroller.addListener((){
       print("update view");
       setState(() {});
@@ -84,7 +85,7 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
         print("$widthTranslateMaximum, $heightTranslateMaximum");
 
         print(_translation);
-        _translation = new Offset(
+        _translation = Offset(
           -Math.min(widthTranslateMaximum, _translation.dx > 0 ? 0.0 : _translation.dx.abs()),
           -Math.min(heightTranslateMaximum, _translation.dy > 0 ? 0.0 : _translation.dy.abs())
         );
@@ -215,16 +216,17 @@ class SubtitlePainter extends CustomPainter {
   TextPainter _textPainter;
   EdgeInsets _padding = EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16);
   SubtitlePainter()
-    : _textPainter = new TextPainter(textDirection: TextDirection.ltr,);
+    : _textPainter = TextPainter(textDirection: TextDirection.ltr,);
 
   @override
   void paint(Canvas canvas, Size size) {
     var rect = Offset.zero & _canvasResolution;
 
-    if(_isRenderBackground) 
+    if(_isRenderBackground) {
       canvas.drawRect(rect, Paint()..shader = LinearGradient(
         colors:  [_canvasBackgroundColor, _canvasBackgroundColor] // [const Color(0xFFFFFF00), const Color(0xFFffffff)],
       ).createShader(rect));
+    }
       // canvas.drawRect(rect, Paint()..shader = RadialGradient(
       //   center: const Alignment(0.7, -0.6),
       //   radius: 0.2,
@@ -233,18 +235,15 @@ class SubtitlePainter extends CustomPainter {
       // ).createShader(rect));
 
     TextSpan originalSpan = _textPainter.text as TextSpan;
-    if(_shadows != null && _shadows.length > 0) {
+    if(_shadows != null && _shadows.isNotEmpty) {
       // print("paint shadow");
       TextSpan shadowSpan = TextSpan(text: originalSpan.text, style: originalSpan.style.copyWith(
         /*foreground: _borderPaint != null ? _borderPaint : null,*/ shadows: _shadows));
       _textPainter.text = shadowSpan;
       _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Top)
-        _textPainter.paint(canvas, new Offset(_padding.left, _padding.top));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Center)
-        _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom)
-        _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
     if(_borderPaint != null && _borderPaint.strokeWidth > 0) {
@@ -253,22 +252,16 @@ class SubtitlePainter extends CustomPainter {
         foreground: _borderPaint));
       _textPainter.text = borderSpan;
       _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Top)
-        _textPainter.paint(canvas, new Offset(_padding.left, _padding.top));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Center)
-        _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom)
-        _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
     _textPainter.text = originalSpan;
     _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Top)
-      _textPainter.paint(canvas, new Offset(_padding.left, _padding.top));
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Center)
-      _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom)
-      _textPainter.paint(canvas, new Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+    if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+    if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+    if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
   }
 
   bool _update = true;
@@ -289,24 +282,15 @@ class SubtitlePainter extends CustomPainter {
     bool isRenderBackground,
     Color canvasBackgroundColor,
   }) {
-    if(align != null)
-      this._textPainter = new TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
-    if(subtitleAlignment != null)
-      this._subtitleAlignment = subtitleAlignment;
-    if(span != null)
-      this._textPainter.text = span;
-    if(canvasResolution != null)
-      this._canvasResolution = canvasResolution;
-    if(padding != null)
-      this._padding = padding;
-    if(borderPaint != null)
-      this._borderPaint = borderPaint;
-    if(shadows != null)
-      this._shadows = shadows;
-    if(isRenderBackground != null)
-      this._isRenderBackground = isRenderBackground;
-    if(canvasBackgroundColor != null)
-      this._canvasBackgroundColor = canvasBackgroundColor;
+    if(align != null) this._textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
+    if(subtitleAlignment != null) this._subtitleAlignment = subtitleAlignment;
+    if(span != null) this._textPainter.text = span;
+    if(canvasResolution != null) this._canvasResolution = canvasResolution;
+    if(padding != null) this._padding = padding;
+    if(borderPaint != null) this._borderPaint = borderPaint;
+    if(shadows != null) this._shadows = shadows;
+    if(isRenderBackground != null) this._isRenderBackground = isRenderBackground;
+    if(canvasBackgroundColor != null) this._canvasBackgroundColor = canvasBackgroundColor;
     _update = true;
   }
 
