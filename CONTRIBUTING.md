@@ -29,7 +29,7 @@ Before creating a pull request please:
 Pull Requests without 100% test coverage will not be approved.
 5. Ensure the test suite passes.
 6. If you've changed the public API, make sure to update/add documentation.
-7. Format your code (`dartfmt -w .`).
+7. Don't Format your code with (`dartfmt -w .`), If It make It indent the arguments 4 characters. See [Style Guild](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#indent-multi-line-argument-and-parameter-lists-by-2-characters), [Issue](https://github.com/flutter/flutter/issues/53018), use [pedantic](https://github.com/dart-lang/pedantic) to check in vscode.
 8. Analyze your code (`dartanalyzer --fatal-infos --fatal-warnings .`).
 9. Create the Pull Request.
 10. Verify that all status checks are passing.
@@ -38,78 +38,6 @@ While the prerequisites above must be satisfied prior to having your
 pull request reviewed, the reviewer(s) may ask you to complete additional
 design work, tests, or other changes before your pull request can be ultimately
 accepted.
-
-## Contributing to Documentation
-
-If you would like to contribute to the [documentation](https://bloclibrary.dev)
-please follow the same process for "Creating a Pull Request" and double check
-that your changes look good by running the docs locally.
-
-```sh
-# change directories into docs
-cd ./docs
-
-# run a local http server on port 8080
-python -m SimpleHTTPServer 8080 .
-
-# navigate to http://localhost:8080
-```
-
-If you want to help maintain translations in the future, add yourself to `.github/DOCS_ISSUE_TEMPLATE.md`.
-
-To make PRs more readable, please provide this checklist to the PR description
-so other contributors can easily see what's already done.
-
-```text
-- [ ] README
-- [ ] Cover page
-- [ ] Sidebar
-- Introduction
-  - [ ] Getting Started
-  - [ ] Why Bloc?
-- Core Concepts
-  - [ ] bloc
-  - [ ] flutter_bloc
-- [ ] Architecture
-- [ ] Testing
-- [ ] Naming Conventions
-- [ ] FAQs
-- Tutorials
-  - Flutter
-    - [ ] Counter
-    - [ ] Timer
-    - [ ] Infinite List
-    - [ ] Login
-    - [ ] Weather
-    - [ ] Todos
-    - [ ] Firebase Login
-    - [ ] Firestore Todos
-  - AngularDart
-    - [ ] Counter
-  - Flutter + AngularDart
-    - [ ] Github Search
-- Recipes
-  - Flutter
-    - [ ] Show SnackBar
-    - [ ] Navigation
-    - [ ] Bloc Access
-- Tools
-  - Extensions
-    - [ ] IntelliJ
-    - [ ] VSCode
-```
-
-## Adding an example
-
-Examples live in the `examples` folder.
-
-When you're adding an example, make sure to add CI checks for it in
-[main.yaml](https://github.com/felangel/bloc/blob/master/.github/workflows/main.yaml):
-- For a Flutter example, add it to the `folder` list in the `examples-flutter`
-step.
-- For a web example, add it to the `folder` list in the `examples-web` step.
-- For a pure Dart example, add it to the `folder` list in the `examples-pure`
-step.
 
 ## License
 
