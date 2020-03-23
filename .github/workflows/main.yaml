@@ -4,13 +4,25 @@ on:
   push:
     paths:
     - '.github/workflows/main.yaml'
-    - 'examples/**'
-    - 'packages/**'
+    - 'test/**'
+    - 'lib/**'
+    - 'resources/**'
+    - 'windows/**'
+    - 'macos/**'
+    - 'linux/**'
+    - 'go/**'
+    - 'fonts/**'
 
   pull_request:
     paths:
-    - 'examples/**'
-    - 'packages/**'
+    - 'test/**'
+    - 'lib/**'
+    - 'resources/**'
+    - 'windows/**'
+    - 'macos/**'
+    - 'linux/**'
+    - 'go/**'
+    - 'fonts/**'
 
 env:
   flutter_channel: 'stable'
