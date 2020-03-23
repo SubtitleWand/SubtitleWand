@@ -7,11 +7,44 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:subtitle_wand/design/color_palette.dart';
 
+/// Which way for Subtitle to align horizontally.
+enum SubtitleHorizontalAlignment {
+  Left,
+  Center,
+  Right
+}
+
+/// Which way for Subtitle to align Vertically
+enum SubtitleVerticalAlignment {
+  // topLeft,
+  // topCenter,
+  // topRight,
+  // centerLeft,
+  Top,
+  Center,
+  Bottom,
+  // centerRight,
+  // bottomLeft,
+  // bottomCenter,
+  // bottomRight,
+}
+
+///
+/// Subtitle Panel supports translation and scale.
+///
 class SubtitlePanel extends StatefulWidget {
-  final SubtitlePainter _painter;
-  final InlineSpan _span;
-  final Size _canvasResolution;
-  final Color _canvasBackgroundColor;
+  /// The painter used to draw on canvas. use It to take pictures.
+  final SubtitlePainter painter;
+  /// The span represent the content to render.
+  final InlineSpan span;
+  /// The resolution of canvas, give an full width as video desired, and suitable height will lead to goods mostly.
+  final Size canvasResolution;
+  /// The background color of canvas, will not be rendered in the canvas
+  final Color canvasBackgroundColor;
+  /// Creates a Subtitle panel.
+  ///
+  /// The [painter] must not be null. 
+  /// The [span] must not be null.
   SubtitlePanel({
     Key key,
     @required SubtitlePainter painter,
@@ -21,10 +54,10 @@ class SubtitlePanel extends StatefulWidget {
   }) 
     :  
       assert(painter != null && span != null),
-      _painter = painter,
-      _span = span,
-      _canvasResolution = canvasResolution ?? Size(1024, 768),
-      _canvasBackgroundColor = canvasBackgroundColor,
+      painter = painter,
+      span = span,
+      canvasResolution = canvasResolution ?? Size(1024, 768),
+      canvasBackgroundColor = canvasBackgroundColor,
       super(key: key);
 
   @override
@@ -40,8 +73,8 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
   @override
   void initState() { 
     super.initState();
-    _painter = widget._painter;
-    _painter.update(span: widget._span, canvasResolution: widget._canvasResolution);
+    _painter = widget.painter;
+    _painter.update(span: widget.span, canvasResolution: widget.canvasResolution);
     _scaleScroller = ScrollController(initialScrollOffset: 0);
     _scaleScroller.addListener((){
       print("update view");
@@ -52,7 +85,7 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
   @override
   void didUpdateWidget(SubtitlePanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _painter.update(span: widget._span, canvasResolution: widget._canvasResolution, canvasBackgroundColor: widget._canvasBackgroundColor);
+    _painter.update(span: widget.span, canvasResolution: widget.canvasResolution, canvasBackgroundColor: widget.canvasBackgroundColor);
   }
 
   @override
@@ -68,15 +101,15 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
     // 1080 / 500 = 2.x
     // 800 / 500 = 1.6
     // 900 / 500 = 1.8 用 1.8 縮
-    // double scaleX = widget._canvasResolution.width / renderSize.width; 
-    // double scaleY = widget._canvasResolution.height / renderSize.height;
+    // double scaleX = widget.canvasResolution.width / renderSize.width; 
+    // double scaleY = widget.canvasResolution.height / renderSize.height;
     return LayoutBuilder(
       builder: (context, constraint) {
-        double scaleX = widget._canvasResolution.width / constraint.biggest.width; 
-        double scaleY = widget._canvasResolution.height / constraint.biggest.height;
+        double scaleX = widget.canvasResolution.width / constraint.biggest.width; 
+        double scaleY = widget.canvasResolution.height / constraint.biggest.height;
         double scale =  1.0 / Math.max(scaleX, scaleY);
-        double scaledWidth = widget._canvasResolution.width * scale;
-        double scaledHeight = widget._canvasResolution.height * scale;
+        double scaledWidth = widget.canvasResolution.width * scale;
+        double scaledHeight = widget.canvasResolution.height * scale;
         double mouseScaler =  (_scaleScroller.hasClients ? (_scaleScroller.offset / 500) + 1.0 : 1.0);
         double finalScale = scale * mouseScaler;
         print(mouseScaler);
@@ -103,7 +136,7 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
                   alignment: Alignment.topLeft,
                   scale: finalScale,
                   child: CustomPaint(
-                    size: widget._canvasResolution,
+                    size: widget.canvasResolution,
                     painter: _painter,
                   )
                 )
@@ -198,20 +231,9 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
   }
 }
 
-enum SubtitleVerticleAlignment {
-  // topLeft,
-  // topCenter,
-  // topRight,
-  // centerLeft,
-  Top,
-  Center,
-  Bottom,
-  // centerRight,
-  // bottomLeft,
-  // bottomCenter,
-  // bottomRight,
-}
-
+///
+/// The painter used to render whole canvas.
+///
 class SubtitlePainter extends CustomPainter {
   TextPainter _textPainter;
   EdgeInsets _padding = EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16);
@@ -241,9 +263,9 @@ class SubtitlePainter extends CustomPainter {
         /*foreground: _borderPaint != null ? _borderPaint : null,*/ shadows: _shadows));
       _textPainter.text = shadowSpan;
       _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
     if(_borderPaint != null && _borderPaint.strokeWidth > 0) {
@@ -252,37 +274,52 @@ class SubtitlePainter extends CustomPainter {
         foreground: _borderPaint));
       _textPainter.text = borderSpan;
       _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-      if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+      if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
     _textPainter.text = originalSpan;
     _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
-    if(_subtitleAlignment == SubtitleVerticleAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+    if(_subtitleAlignment == SubtitleVerticalAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
+    if(_subtitleAlignment == SubtitleVerticalAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
+    if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
   }
 
   bool _update = true;
   Size _canvasResolution = Size(1024, 768);
-  SubtitleVerticleAlignment _subtitleAlignment = SubtitleVerticleAlignment.Top;
+  SubtitleVerticalAlignment _subtitleAlignment = SubtitleVerticalAlignment.Top;
   Paint _borderPaint;
   List<Shadow> _shadows;
   bool _isRenderBackground = true;
   Color _canvasBackgroundColor = ColorPalette.secondaryColor;
+
+  ///
+  /// update the [span], which should have been used as subtitle span.
+  /// 
+  /// [subtitleHorizontalAlignment] for textAlign in horizontal in canvas.
+  /// [subtitleAlignment] for verical algin in canvas.
+  /// [padding] prevent subtitle from touching edge and give suitable area.
+  /// [borderPaint], which should describe all painting style, wiil be positioned at lowest layer.
+  /// [shadows], which support multi shadow, but currently can't work well with border.
   void update({
     InlineSpan span,
     Size canvasResolution,
-    TextAlign align,
-    SubtitleVerticleAlignment subtitleAlignment,
+    // TextAlign align,
+    SubtitleHorizontalAlignment subtitleHorizontalAlignment,
+    SubtitleVerticalAlignment subtitleAlignment,
     EdgeInsets padding,
     Paint borderPaint,
     List<Shadow> shadows,
     bool isRenderBackground,
     Color canvasBackgroundColor,
   }) {
-    if(align != null) this._textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
+    if(subtitleHorizontalAlignment != null) {
+      TextAlign align = TextAlign.center;
+      if(subtitleHorizontalAlignment == SubtitleHorizontalAlignment.Left) align = TextAlign.left;
+      if(subtitleHorizontalAlignment == SubtitleHorizontalAlignment.Right) align = TextAlign.right;
+      this._textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
+    }
     if(subtitleAlignment != null) this._subtitleAlignment = subtitleAlignment;
     if(span != null) this._textPainter.text = span;
     if(canvasResolution != null) this._canvasResolution = canvasResolution;
@@ -294,6 +331,10 @@ class SubtitlePainter extends CustomPainter {
     _update = true;
   }
 
+  ///
+  /// save image with [canvasSize] and transform to [resolutionSize],
+  /// and will be saved in [directory], the name is [snapshot].png
+  ///
   Future<void> saveImage(Size canvasSize, Size resolutionSize, String directory, String snapshot) async {
     PictureRecorder recorder = PictureRecorder();
     Canvas canvas = Canvas(recorder);
@@ -311,8 +352,8 @@ class SubtitlePainter extends CustomPainter {
       print("createDirectory");
       await Directory("$directory").create();
     }
-    print(Directory.current.toString());
-    await File('${Directory.current.path}\\$directory\\$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
+    print("$directory\\$snapshot.png");
+    await File('$directory\\$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
   }
 
   @override

@@ -19,16 +19,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 
+///
+/// Creates an attribute form field that allow maximum length 4, and 
+///
 class AttributeFormField extends StatelessWidget {
+  /// uses controller to listen value changing.
   final TextEditingController controller;
+  /// init value
   final String initialValue;
+  /// when false, only positive number is allowed, true for non-negative numbers.
   final bool isMinusable;
   // void Function(String) onFieldSubmitted;
   AttributeFormField({
     Key key,
     this.controller,
     this.initialValue,
-    this.isMinusable,
+    this.isMinusable = false,
     // this.onFieldSubmitted
   }) : super(key: key);
 

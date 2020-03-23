@@ -4,11 +4,17 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
+///
+/// Manage fonts in memory, use flutter's FontLoader, so It could be used anywhere with the [familyName]
+///
 class FontManager {
   final Map<String, FontLoader> _fonts;
   FontManager() :
     _fonts = Map<String, FontLoader>();
 
+  ///
+  /// Assign [fontFamilyName] to flutter's FontLoader, with [pathToTTF] from file system.
+  ///
   Future<void> addFont(String fontFamilyName, String pathToTTF) async {
     File file;
     try {
@@ -26,6 +32,9 @@ class FontManager {
     await _fonts[fontFamilyName].load();
   }
 
+  ///
+  /// check If familyName is already used
+  ///
   bool contains(String fontFamilyName) {
     return _fonts.containsKey(fontFamilyName);
   }
