@@ -12,6 +12,7 @@ on:
     - 'linux/**'
     - 'go/**'
     - 'fonts/**'
+    - 'scripts/**'
 
   pull_request:
     paths:
