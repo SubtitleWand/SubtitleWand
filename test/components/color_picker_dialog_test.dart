@@ -260,15 +260,6 @@ void main() {
   });
 
   testWidgets("transparency test", (tester) async { 
-    // f00 -> ff0 -> 0f0 -> 0ff -> 00f -> f0f -> f00
-    // width / 7, red yellow green gb blue purple red
-    const Color RED_COLOR = Color(0xffff0000);
-    const Color YELLOW_COLOR = Color(0xffffff00);
-    const Color GREEN_COLOR = Color(0xff00ff00);
-    const Color GREEN_BLUE_COLOR = Color(0xff00ffff);
-    const Color BLUE_COLOR = Color(0xff0000ff);
-    const Color PURPLE_COLOR = Color(0xffff00ff);
-
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(

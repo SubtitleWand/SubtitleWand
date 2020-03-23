@@ -7,6 +7,8 @@
 android/
 build/
 ios/
+_macro_editor/
+coverage/
 packages
 .flutter-plugins
 # Since the current expectation is that clients are using Flutter head,
