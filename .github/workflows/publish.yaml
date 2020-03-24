@@ -43,7 +43,7 @@ jobs:
         with:
           channel: ${{ env.flutter_channel }}
           flutter-version: ${{ env.flutter_version }}
-      - uses: crazy-max/ghaction-xgo@v1
+      - uses: actions/setup-go@v2-beta
         with:
           go-version: '1.13.3' # The Go version to download (if necessary) and use.
       - run: |
@@ -52,6 +52,7 @@ jobs:
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         run: |
+          flutter doctor
           export PATH=$PATH:$(go env GOPATH)/bin
           export PATH=$PATH:$FLUTTER_DART_HOME
           go get -v -u github.com/go-flutter-desktop/hover
