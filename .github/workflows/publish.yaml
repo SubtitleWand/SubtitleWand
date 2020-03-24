@@ -48,8 +48,8 @@ jobs:
         run: |
           export PATH=$PATH:$FLUTTER_DART_HOME
           hover build linux
-      - name: Upload exectuables
       - uses: actions/upload-artifact@v1
+      - name: Upload exectuables
         with:
           name: homework
           path: go/build/outputs
