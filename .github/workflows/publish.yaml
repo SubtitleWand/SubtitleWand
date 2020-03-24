@@ -58,7 +58,9 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           export PATH=$PATH:$FLUTTER_DART_HOME
           echo $PATH
+          echo 'ls /opt/hostedtoolcache/go/1.13.3/x64/bin'
           ls /opt/hostedtoolcache/go/1.13.3/x64/bin
+          echo 'ls /home/runner/go/bin'
           ls /home/runner/go/bin
           hover build linux
 
