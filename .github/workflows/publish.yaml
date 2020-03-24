@@ -51,6 +51,7 @@ jobs:
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
           ls $(go env GOPATH)/bin
           echo $PATH
           export PATH=$PATH:$FLUTTER_DART_HOME
