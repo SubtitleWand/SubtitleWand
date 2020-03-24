@@ -55,9 +55,9 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           export PATH=$PATH:$FLUTTER_DART_HOME
           go get -v -u github.com/go-flutter-desktop/hover
-          sudo apt-get install build-essential libgl1-mesa-dev 
-          sudo apt-get install gcc libc6-dev
-          sudo apt-get install libgl1-mesa-dev xorg-dev
+          apt-get install build-essential libgl1-mesa-dev 
+          apt-get install gcc libc6-dev
+          apt-get install libgl1-mesa-dev xorg-dev
           echo $PATH
           echo 'ls /opt/hostedtoolcache/go/1.13.3/x64/bin'
           ls /opt/hostedtoolcache/go/1.13.3/x64/bin
@@ -65,7 +65,7 @@ jobs:
           ls /home/runner/go/bin
           ls /home/runner/go
           echo $(go env)
-          sudo hover build linux
+          hover build linux
 
       - uses: actions/upload-artifact@v1
         with:
