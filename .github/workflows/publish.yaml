@@ -43,7 +43,7 @@ jobs:
         with:
           channel: ${{ env.flutter_channel }}
           flutter-version: ${{ env.flutter_version }}
-      - uses: actions/setup-go@v2-beta
+      - uses: crazy-max/ghaction-xgo@v1
         with:
           go-version: '1.13.3' # The Go version to download (if necessary) and use.
       - run: |
@@ -65,7 +65,7 @@ jobs:
           ls /home/runner/go/bin
           ls /home/runner/go
           echo $(go env)
-          /home/runner/go/bin/hover build linux
+          hover build linux
 
       - uses: actions/upload-artifact@v1
         with:
