@@ -38,16 +38,18 @@ jobs:
       - uses: actions/setup-go@v2-beta
         with:
           go-version: '^1.13.1' # The Go version to download (if necessary) and use.
-        run: |
+      - run: |
           go version
           go get -v -u github.com/go-flutter-desktop/hover
           sudo apt-get install -y gcc libc6-dev libgl1-mesa-dev xorg-dev
+
       - name: Build exectuables
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         run: |
           export PATH=$PATH:$FLUTTER_DART_HOME
           hover build linux
+          
       - uses: actions/upload-artifact@v1
         with:
           name: homework
