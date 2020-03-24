@@ -1,4 +1,4 @@
-name: Test
+name: publish-linux
 
 on:
   watch:
@@ -11,8 +11,8 @@ env:
 jobs:
   # Analyze and test each core package.
   build:
+    if: github.actor == github.event.repository.owner.login
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         folder: ['.']
@@ -21,7 +21,6 @@ jobs:
           - os: ubuntu-latest
             flutter_path: /opt/hostedtoolcache/flutter
       fail-fast: false
-
     steps:
       - uses: actions/checkout@v2
       - name: Cache Flutter dependencies
@@ -41,8 +40,8 @@ jobs:
           go-version: '^1.13.1' # The Go version to download (if necessary) and use.
       - run: |
           go version
-          go get -u github.com/go-flutter-desktop/hover
-          apt-get install -y gcc libc6-dev libgl1-mesa-dev xorg-dev
+          sudo go get -u github.com/go-flutter-desktop/hover
+          sudo apt-get install -y gcc libc6-dev libgl1-mesa-dev xorg-dev
 
       - name: Build exectuables
         env:
