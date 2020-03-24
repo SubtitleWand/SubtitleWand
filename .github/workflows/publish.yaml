@@ -31,7 +31,14 @@ jobs:
           key: ${{ runner.OS }}-flutter-cache-${{ env.flutter_version }}
           restore-keys: |
             ${{ runner.OS }}-flutter-cache-
-
+      - name: Cache Golang dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
       - uses: subosito/flutter-action@v1
         with:
           channel: ${{ env.flutter_channel }}
