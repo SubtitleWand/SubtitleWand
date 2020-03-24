@@ -45,12 +45,16 @@ jobs:
           go get -v -u github.com/go-flutter-desktop/hover
           sudo apt-get install -y gcc libc6-dev libgl1-mesa-dev xorg-dev
           ls $(go env GOPATH)/bin
+          echo $PATH
 
       - name: Build exectuables
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         run: |
+          ls $(go env GOPATH)/bin
+          echo $PATH
           export PATH=$PATH:$FLUTTER_DART_HOME
+          echo $PATH
           hover build linux
 
       - uses: actions/upload-artifact@v1
