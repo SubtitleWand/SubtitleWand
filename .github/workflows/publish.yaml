@@ -50,7 +50,6 @@ jobs:
           sudo apt-get install libgl1-mesa-dev xorg-dev
           export PATH=$PATH:$(go env GOPATH)/bin
           export PATH=$PATH:$FLUTTER_DART_HOME
-# flutter pub get
           hover build linux
 
       - uses: actions/upload-artifact@v1
