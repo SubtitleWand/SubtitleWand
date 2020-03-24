@@ -51,6 +51,8 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           export PATH=$PATH:$FLUTTER_DART_HOME
           echo $PATH
+          ls /opt/hostedtoolcache/go/1.13.3/x64/bin
+          ls /home/runner/go/bin
           hover build linux
 
       - uses: actions/upload-artifact@v1
