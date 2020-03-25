@@ -19,7 +19,7 @@ jobs:
         folder: ['.']
         os: [windows-latest]
         include:
-          - os: ubuntu-latest
+          - os: windows-latest
             flutter_path: /opt/hostedtoolcache/flutter
       fail-fast: false
     steps:
