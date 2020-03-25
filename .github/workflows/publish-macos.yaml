@@ -1,0 +1,74 @@
+name: publish-macos
+
+on:
+  push:
+    branches:    
+      - ci-cd-publish-macos
+
+env:
+  flutter_channel: 'stable'
+  flutter_version: '1.12.13+hotfix.8'
+
+jobs:
+  # Analyze and test each core package.
+  build:
+    if: github.actor == github.event.repository.owner.login
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        folder: ['.']
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v1
+        with:
+          path: ${{ matrix.flutter_path }}
+          key: ${{ runner.OS }}-flutter-cache-${{ env.flutter_version }}
+          restore-keys: |
+            ${{ runner.OS }}-flutter-cache-
+      - name: Cache Golang dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter-version: ${{ env.flutter_version }}
+      - uses: actions/setup-go@v2-beta
+        with:
+          go-version: '1.13.3' # The Go version to download (if necessary) and use.
+      - run: |
+          go version
+      - name: Build exectuables
+        env:
+          FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
+        run: |
+          flutter doctor
+          export PATH=$PATH:$(go env GOPATH)/bin
+          export PATH=$PATH:$FLUTTER_DART_HOME
+          go get -v -u github.com/go-flutter-desktop/hover
+          sudo apt-get install build-essential libgl1-mesa-dev 
+          sudo apt-get install gcc libc6-dev
+          sudo apt-get install libgl1-mesa-dev xorg-dev
+          echo $PATH
+          echo 'ls /opt/hostedtoolcache/go/1.13.3/x64/bin'
+          ls /opt/hostedtoolcache/go/1.13.3/x64/bin
+          echo 'ls /home/runner/go/bin'
+          ls /home/runner/go/bin
+          ls /home/runner/go
+          echo $(go env)
+          hover build darwin
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: homework
+          path: go/build/outputs/darwin
