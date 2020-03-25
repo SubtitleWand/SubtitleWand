@@ -17,9 +17,9 @@ jobs:
     strategy:
       matrix:
         folder: ['.']
-        os: [windows-latest]
+        os: [ubuntu-latest]
         include:
-          - os: windows-latest
+          - os: ubuntu-latest
             flutter_path: /opt/hostedtoolcache/flutter
       fail-fast: false
     steps:
