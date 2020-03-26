@@ -31,7 +31,7 @@ env:
 
 jobs:
   # Analyze and test each core package.
-  packages:
+  pre-merge:
     runs-on: ${{ matrix.os }}
 
     strategy:

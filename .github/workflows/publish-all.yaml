@@ -73,5 +73,5 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: linux
+          name: all
           path: go/build/outputs
