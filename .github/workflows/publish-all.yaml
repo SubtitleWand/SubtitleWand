@@ -1,9 +1,9 @@
-name: publish-macos
+name: publish-linux
 
 on:
   push:
     branches:    
-      - ci-cd-publish-macos/**
+      - ci-cd-publish/**
 
 env:
   flutter_channel: 'stable'
@@ -65,10 +65,13 @@ jobs:
           echo 'ls /home/runner/go/bin'
           ls /home/runner/go/bin
           ls /home/runner/go
+          echo $(go env)
+          hover build linux
+          hover build windows
           hover init-packaging darwin-bundle
           hover build darwin-bundle
 
       - uses: actions/upload-artifact@v1
         with:
-          name: darwin
-          path: go/build/outputs/darwin-bundle
+          name: linux
+          path: go/build/outputs
