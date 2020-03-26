@@ -65,10 +65,10 @@ jobs:
           echo 'ls /home/runner/go/bin'
           ls /home/runner/go/bin
           ls /home/runner/go
-          echo $(go env)
-          hover build darwin-bundle --docker
+          hover init-packaging darwin-bundle
+          hover build darwin-bundle
 
       - uses: actions/upload-artifact@v1
         with:
-          name: homework
-          path: go/build/outputs/darwin
+          name: darwin
+          path: go/build/outputs/darwin-bundle
