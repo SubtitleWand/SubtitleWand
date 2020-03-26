@@ -70,5 +70,5 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: homework
+          name: linux
           path: go/build/outputs/linux
