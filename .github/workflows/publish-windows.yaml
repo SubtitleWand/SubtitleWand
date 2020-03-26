@@ -3,7 +3,7 @@ name: publish-windows
 on:
   push:
     branches:    
-      - ci-cd-publish-windows
+      - ci-cd-publish-windows/**
 
 env:
   flutter_channel: 'stable'
