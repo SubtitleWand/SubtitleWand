@@ -3,7 +3,7 @@ name: publish-linux
 on:
   push:
     branches:    
-      - ci-cd-publish-linux
+      - ci-cd-publish-linux/**
 
 env:
   flutter_channel: 'stable'
