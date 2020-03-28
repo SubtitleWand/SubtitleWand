@@ -12,7 +12,7 @@ env:
 jobs:
   # Analyze and test each core package.
   build:
-    if: github.actor == github.event.repository.owner.login
+    if: github.actor == 'Tokenyet'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
