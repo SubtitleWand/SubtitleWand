@@ -7,7 +7,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
+import 'package:subtitle_wand/utilities/logger_util.dart';
 
 /// Which way for Subtitle to align horizontally.
 enum SubtitleHorizontalAlignment {
@@ -79,7 +81,6 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
     _painter.update(span: widget.span, canvasResolution: widget.canvasResolution);
     _scaleScroller = ScrollController(initialScrollOffset: 0);
     _scaleScroller.addListener((){
-      print("update view");
       setState(() {});
     });
   }
@@ -114,17 +115,14 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
         double scaledHeight = widget.canvasResolution.height * scale;
         double mouseScaler =  (_scaleScroller.hasClients ? (_scaleScroller.offset / 500) + 1.0 : 1.0);
         double finalScale = scale * mouseScaler;
-        print(mouseScaler);
+
         double widthTranslateMaximum = (scaledWidth * mouseScaler - scaledWidth).floorToDouble();
         double heightTranslateMaximum = (scaledHeight * mouseScaler - scaledHeight).floorToDouble();
-        print("$widthTranslateMaximum, $heightTranslateMaximum");
 
-        print(_translation);
         _translation = Offset(
           -Math.min(widthTranslateMaximum, _translation.dx > 0 ? 0.0 : _translation.dx.abs()),
           -Math.min(heightTranslateMaximum, _translation.dy > 0 ? 0.0 : _translation.dy.abs())
         );
-        print(_translation);
 
         return Container(
           child: Stack(
@@ -166,12 +164,9 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
                 child: Listener(
                   onPointerDown: (pointer) {
                     isTapped = true;
-                    print("down");
-                    print(pointer.localPosition);
                     setState(() {});
                   },
                   onPointerMove: (pointer) {
-                    print("move: ${pointer.delta.distance}");
                     // if(pointer.delta.distance < 10)
                     //   return;
                     //if(pointer.delta.distance)
@@ -181,7 +176,6 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
                   onPointerUp: (pointer) {
                     isTapped = false;
                     setState(() {});
-                    print("up");
                   },
                   child: SingleChildScrollView(
                     controller: _scaleScroller,
@@ -353,23 +347,18 @@ class SubtitlePainter extends CustomPainter {
 
     // create folder first, but no mac, mac will create file with folders
     if(!Platform.isMacOS && !await Directory("$directory").exists()) {
-      print("createDirectory");
       await Directory("$directory").create();
     }
 
-    print("$directory/$snapshot.png");
     if(Platform.isMacOS) {
-      print("mac: create file");
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String path = p.join(appDocDir.path, "$directory", "$snapshot.png");
-      print("mac: $path");
       File createdFile = await File('$path').create(recursive: true);
       await createdFile.writeAsBytes(pngBytes.buffer.asInt8List());
-      print("mac: create file end");
+      unawaited(LoggerUtil.getInstance().log("createFile: $path"));
     } else {
-      print("create file");
       await File('$directory/$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
-      print("mac: create file end");
+      unawaited(LoggerUtil.getInstance().log("createFile: $directory/$snapshot.png"));
     }
   }
 

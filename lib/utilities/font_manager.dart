@@ -20,7 +20,6 @@ class FontManager {
     try {
       file = File("$pathToTTF");
     } catch(err) {
-      print(err);
       // throw err;
       rethrow;
     }
