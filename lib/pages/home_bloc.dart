@@ -9,9 +9,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/utilities/font_manager.dart';
+import 'package:subtitle_wand/utilities/logger_util.dart';
 
 
 abstract class HomePageEvent extends Equatable {
@@ -733,11 +735,8 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   }
 
   Stream<HomePageState> _mapSaveImageEventToState(SaveImageEvent event) async* {
-    // print("SaveImageEventStart");
-    // print(Platform.isMacOS ? "I'm a fking mac" : "I'm not a mac");
     Size resolution = Size(this.state.propertyCanvasResolutionX.toDouble(), this.state.propertyCanvasResolutionY.toDouble());
     for(int i = 0; i < this.state.propertySubtitleTexts.length; i++) {
-      // print("render: $i");
       yield state.toSavingState().copyWith(
         currentFrame: i
       );
@@ -751,7 +750,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           ),
         ),
       );
-      // print("pre save image");
       await event.painter.saveImage(resolution, resolution, event.folder ?? "results", "image_$i");
     }
 
@@ -762,7 +760,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     } else {
       yield state.toOpenFolderState(event.folder ?? "results");
     }
-    // print("SaveImageEventEnd");
     yield state.toIdleState();
   }
   
@@ -815,7 +812,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
         propertyFontFamily: event.fontPath
       );
     } catch(err) {
-      print(err);
+      unawaited(LoggerUtil.getInstance().logError(err.toString(), isWriteToJournal: true));
     }
   }
   Stream<HomePageState> _mapPropertyBorderSizeEventToState(PropertyBorderSizeEvent event) async* {

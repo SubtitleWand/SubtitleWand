@@ -337,7 +337,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                             color: Colors.black,
                                             child: MouseRegion(
                                               onEnter: (m) {
-                                                print("enter");
                                                 _frameButtonController.forward();
                                                 setState(() {
                                                   isMinimizeFrameControl = true;
@@ -345,7 +344,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                               },
                                               onExit: (m) {
                                                 _frameButtonController.reverse();
-                                                print("exit");
                                                 setState(() {
                                                   isMinimizeFrameControl = false;
                                                 });
