@@ -40,7 +40,6 @@ flutter:
   uses-material-design: true
   assets:
     - resources/
-    - resources/TW/
   # See https://github.com/flutter/flutter/wiki/Desktop-shells#fonts
   fonts:
     - family: Roboto
