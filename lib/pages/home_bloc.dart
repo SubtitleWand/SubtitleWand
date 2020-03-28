@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as Math;
 import 'dart:ui';
 
@@ -6,6 +7,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/utilities/font_manager.dart';
@@ -730,10 +733,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   }
 
   Stream<HomePageState> _mapSaveImageEventToState(SaveImageEvent event) async* {
-    print("SaveImageEventStart");
+    // print("SaveImageEventStart");
+    // print(Platform.isMacOS ? "I'm a fking mac" : "I'm not a mac");
     Size resolution = Size(this.state.propertyCanvasResolutionX.toDouble(), this.state.propertyCanvasResolutionY.toDouble());
     for(int i = 0; i < this.state.propertySubtitleTexts.length; i++) {
-      print("render: $i");
+      // print("render: $i");
       yield state.toSavingState().copyWith(
         currentFrame: i
       );
@@ -747,10 +751,18 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           ),
         ),
       );
+      // print("pre save image");
       await event.painter.saveImage(resolution, resolution, event.folder ?? "results", "image_$i");
     }
-    yield state.toOpenFolderState(event.folder ?? "results");
-    print("SaveImageEventEnd");
+
+    if(Platform.isMacOS) {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String path = p.join(appDocDir.path, "results");
+      yield state.toOpenFolderState(path);
+    } else {
+      yield state.toOpenFolderState(event.folder ?? "results");
+    }
+    // print("SaveImageEventEnd");
     yield state.toIdleState();
   }
   

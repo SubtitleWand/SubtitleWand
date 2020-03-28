@@ -5,6 +5,8 @@ import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 
 /// Which way for Subtitle to align horizontally.
@@ -348,12 +350,27 @@ class SubtitlePainter extends CustomPainter {
     
     Image image = await recorder.endRecording().toImage(resolutionSize.width.toInt(), resolutionSize.height.toInt());
     var pngBytes = await image.toByteData(format: ImageByteFormat.png);
-    if(!await Directory("$directory").exists()) {
+
+    // create folder first, but no mac, mac will create file with folders
+    if(!Platform.isMacOS && !await Directory("$directory").exists()) {
       print("createDirectory");
       await Directory("$directory").create();
     }
-    print("$directory\\$snapshot.png");
-    await File('$directory\\$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
+
+    print("$directory/$snapshot.png");
+    if(Platform.isMacOS) {
+      print("mac: create file");
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String path = p.join(appDocDir.path, "$directory", "$snapshot.png");
+      print("mac: $path");
+      File createdFile = await File('$path').create(recursive: true);
+      await createdFile.writeAsBytes(pngBytes.buffer.asInt8List());
+      print("mac: create file end");
+    } else {
+      print("create file");
+      await File('$directory/$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
+      print("mac: create file end");
+    }
   }
 
   @override
