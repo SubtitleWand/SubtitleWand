@@ -1,61 +1,39 @@
-# Desktop Flutter Example
+<img src="./icon.png" width="170" align="right">
 
-This is the standard Flutter template application, modified to run on desktop.
+# Subtitle Wand - An Universal subtitle solution for helping video making without dependency of any software.
 
-The `linux` and `windows` directories serve as early prototypes of
-what will eventually become the `flutter create` templates for desktop, and will
-be evolving over time to better reflect that goal. The `macos` directory has
-now become a `flutter create` template, so is largely identical to what that
-command creates.
+[![codecov](https://codecov.io/gh/Tokenyet/SubtitleWand/branch/master/graph/badge.svg?token=DUE41G13YN)](https://codecov.io/gh/Tokenyet/SubtitleWand)
 
-## Building and Running
+[![build](https://github.com/Tokenyet/SubtitleWand/workflows/build/badge.svg)](https://github.com/Tokenyet/SubtitleWand/actions)
 
-See [the main project README](../README.md).
+## About SubtitleWand
 
-To build without running, use `flutter build macos`/`windows`/`linux` rather than `flutter run`, as with
-a standard Flutter project.
+This is a universal solution for subtitle to video maker, such as Windows Movie Maker/Sony vegas/ Hitfilm. The motivation is that [Hitfilm](https://fxhome.com/hitfilm-express) do not have a proper way to add subtitle as fast as possible, and the workarounds, Multiple Compisite Shot, One Shot with line moving/masking, Subtitle plugin are fairly tricky and tired for me.
 
-## Dart Differences from Flutter Template
+Subtitle Wand is to target on embedding one subtitle per frame to optimize perfomance, and user could slow the duration to get fully controll on each subtitle.
 
-The `main.dart` and `pubspec.yaml` have minor changes to support desktop:
-* `debugDefaultTargetPlatformOverride` is set to avoid 'Unknown platform'
-  exceptions.
-* The font is explicitly set to Roboto, and Roboto is bundled via
-  `pubspec.yaml`, to ensure that text displays on all platforms.
+## How to use
+1. Select a ttf to your subtitle.
+2. Enter subtitle in **text**, one line per frame. (configue any property you want)
+3. Save images and wait to complete. (generate a sequence of image, you could import It with any maker that supported **Image Sequence**)
+4. Download the [AutoHotKey](https://www.autohotkey.com/) script in this repository's **macro_scripts** folder.
+5. Import Image sequence in **Hitfilm**, and make slow the full shot to 0.5% duration (1 frame to 200 frame per subtitle), and drag It to timeline, you might move the position first before next step.
+6. Lock all other layers excpet subtitle layer, Execute **200frameHitfilm.ahk** to slice automatically, If you are not using hitfilm, you should write It by hand, and If you think It's useful, welcome to feedback the script, issue or pull-request is welcome.
+7. Enjoy your consistent and pre-generated subtitles, the last work is move It to correct timeline, no more.
 
-See the [Flutter Application Requirements section of the Flutter page on
-desktop support](https://github.com/flutter/flutter/wiki/Desktop-shells#flutter-application-requirements)
-for more information.
+## Compile
+Before you can compile Subtitle Wand, you must have following prerequisite:
+1. [flutter](https://flutter.dev/docs/get-started/install) - Best cross-platform framework
+2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang 
 
-## Adapting for Another Project
+All prepared, you could use `hover run` to run the project.
 
-Since `flutter create` is not yet supported for Windows and Linux, the easiest
-way to try out desktop support with an existing Flutter application on those
-platforms is to copy the platform directories from this example; see below for
-details. For macOS, just run `flutter create .` in your project, which will
-create the macOS folder (as long as you have macOS support enabled in `flutter`).
+## Contribute
+Fork the project, and follow the [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Be sure to read the [Flutter page on desktop
-support](https://github.com/flutter/flutter/wiki/Desktop-shells) before trying to
-run an existing project on desktop, especially the [Flutter Application Requirements
-section](https://github.com/flutter/flutter/wiki/Desktop-shells#flutter-application-requirements).
+## Maintainers
+- [Tokenyet](https://github.com/Tokenyet)
 
-### Copying the Desktop Runners
-
-The 'linux' and 'windows' directories are self-contained, and can be copied to
-an existing Flutter project, enabling `flutter run` for those platforms.
-
-**Be aware that neither the API surface of the Flutter desktop libraries nor the
-interaction between the `flutter` tool and the platform directories is stable,
-and no attempt will be made to provide supported migration paths as things
-change.** You should expect that every time you update Flutter you may have
-to delete your copies of the platform directories and re-copy them from an
-updated version of flutter-desktop-embedding.
-
-### Customizing the Runners
-
-See [Application Customization](App-Customization.md) for premilinary
-documenation on modifying basic application information like name and icon.
-
-If you are building for macOS, you should also read about [managing macOS
-security configurations](../macOS-Security.md).
+## Special Thanks
+- [TzuyuLiu](https://github.com/TzuyuLiu) - Friend, for mac production testing
+- [s19096](https://github.com/s19096) - Friend, for mac production testing
