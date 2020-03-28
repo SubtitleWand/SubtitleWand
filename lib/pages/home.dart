@@ -140,6 +140,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
     f1Color = f2Color = defaultKey;
     RawKeyboard.instance.addListener((e){
+      if(_bloc.state is MPB.SavingState) return;
       final bool isKeyDown = e is RawKeyDownEvent;
       final bool isKeyUp = e is RawKeyUpEvent;
 
