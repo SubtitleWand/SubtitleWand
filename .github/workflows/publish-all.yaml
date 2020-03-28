@@ -68,7 +68,6 @@ jobs:
           echo $(go env)
           hover build linux
           hover build windows
-          hover init-packaging darwin-bundle
           hover build darwin-bundle
 
       - uses: actions/upload-artifact@v1
