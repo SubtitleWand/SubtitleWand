@@ -4,7 +4,11 @@
 
 [![codecov](https://codecov.io/gh/Tokenyet/SubtitleWand/branch/master/graph/badge.svg?token=DUE41G13YN)](https://codecov.io/gh/Tokenyet/SubtitleWand)
 
-[![build](https://github.com/Tokenyet/SubtitleWand/workflows/build/badge.svg)](https://github.com/Tokenyet/SubtitleWand/actions)
+[![build](https://github.com/SubtitleWand/SubtitleWand/workflows/build/badge.svg)](https://github.com/SubtitleWand/SubtitleWand/actions)
+
+
+[![downloads](https://img.shields.io/github/downloads/SubtitleWand/SubtitleWand/latest/total)](https://github.com/SubtitleWand/SubtitleWand/releases)
+
 
 ## About SubtitleWand
 
@@ -14,7 +18,7 @@ Subtitle Wand is to target on embedding one subtitle per frame to optimize perfo
 
 ## How to use
 1. Select a ttf to your subtitle.
-2. Enter subtitle in **text**, one line per frame. (configue any property you want)
+2. Enter subtitles in **text**, one line per frame. (configue any property you want)
 3. Save images and wait to complete. (generate a sequence of image, you could import It with any maker that supported **Image Sequence**)
 4. Download the [AutoHotKey](https://www.autohotkey.com/) script in this repository's **macro_scripts** folder.
 5. Import Image sequence in **Hitfilm**, and make slow the full shot to 0.5% duration (1 frame to 200 frame per subtitle), and drag It to timeline, you might move the position first before next step.
