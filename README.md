@@ -9,6 +9,8 @@
 
 [![downloads](https://img.shields.io/github/downloads/SubtitleWand/SubtitleWand/latest/total)](https://github.com/SubtitleWand/SubtitleWand/releases)
 
+[DEMO](https://www.youtube.com/watch?v=BeSdYeeK4QU)
+
 
 ## About SubtitleWand
 
