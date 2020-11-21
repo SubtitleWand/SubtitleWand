@@ -18,7 +18,7 @@ var vmArguments string
 func main() {
 	// DO NOT EDIT, add options in options.go
 	mainOptions := []flutter.Option{
-		flutter.WindowInitialDimensions(1440, 810),
+		// flutter.WindowInitialDimensions(1600, 900),
 		flutter.OptionVMArguments(strings.Split(vmArguments, ";")),
 		flutter.WindowIcon(iconProvider),
 	}
