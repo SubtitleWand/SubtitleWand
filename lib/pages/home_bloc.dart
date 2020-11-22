@@ -7,14 +7,15 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:formz/formz.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
+
 import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/utilities/font_manager.dart';
 import 'package:subtitle_wand/utilities/logger_util.dart';
-
 
 abstract class HomePageEvent extends Equatable {
 }
@@ -27,7 +28,7 @@ class SaveImageEvent extends HomePageEvent {
     this.folder // not yet supported to select folder
   });
   @override
-  List<Object> get props => [DateTime.now(), this.folder];
+  List<Object> get props => [DateTime.now(), folder];
 }
 
 class NextFrameEvent extends HomePageEvent {
@@ -183,7 +184,7 @@ class PropertySubtitleTextEvent extends HomePageEvent {
   List<Object> get props => [text];
 }
 
-abstract class HomePageState extends Equatable {
+class HomePageState extends Equatable {
   final int propertyPaddingLeft;
   final int propertyPaddingRight;
   final int propertyPaddingTop;
@@ -205,6 +206,9 @@ abstract class HomePageState extends Equatable {
   final Color propertyCanvasBackgroundColor;
   final List<String> propertySubtitleTexts;
   final int currentFrame;
+
+  final FormzStatus status;
+  final String openDir;
 
   HomePageState({
     @required this.propertyPaddingLeft,
@@ -228,30 +232,8 @@ abstract class HomePageState extends Equatable {
     @required this.propertyCanvasBackgroundColor,
     @required this.propertySubtitleTexts,
     @required this.currentFrame,
-  });
-
-  copyWith({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
+    @required this.status,
+    @required this.openDir
   });
 
   @override
@@ -277,98 +259,20 @@ abstract class HomePageState extends Equatable {
     propertyCanvasBackgroundColor,
     propertySubtitleTexts,
     currentFrame,
+    status,
+    openDir
   ];
 
-  SavingState toSavingState() {
-    return SavingState(
-      propertyPaddingLeft: this.propertyPaddingLeft,
-      propertyPaddingRight: this.propertyPaddingRight,
-      propertyPaddingTop: this.propertyPaddingTop,
-      propertyPaddingBottom: this.propertyPaddingBottom,
-      propertyFontSize: this.propertyFontSize,
-      propertyFontColor: this.propertyFontColor,
-      propertyFontFamily: this.propertyFontFamily,
-      propertyBorderWidth: this.propertyBorderWidth,
-      propertyBorderColor: this.propertyBorderColor,
-      propertyShadowX: this.propertyShadowX,
-      propertyShadowY: this.propertyShadowY,
-      propertyShadowSpread: this.propertyShadowSpread,
-      propertyShadowBlur: this.propertyShadowBlur,
-      propertyShadowColor: this.propertyShadowColor,
-      verticalAlignment: this.verticalAlignment,
-      horizontalAlignment: this.horizontalAlignment,
-      propertyCanvasResolutionX: this.propertyCanvasResolutionX,
-      propertyCanvasResolutionY: this.propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: this.propertySubtitleTexts,
-      currentFrame: this.currentFrame,
-    );
-  }
+  
 
-  IdleState toIdleState() {
-    return IdleState(
-      propertyPaddingLeft: this.propertyPaddingLeft,
-      propertyPaddingRight: this.propertyPaddingRight,
-      propertyPaddingTop: this.propertyPaddingTop,
-      propertyPaddingBottom: this.propertyPaddingBottom,
-      propertyFontSize: this.propertyFontSize,
-      propertyFontColor: this.propertyFontColor,
-      propertyFontFamily: this.propertyFontFamily,
-      propertyBorderWidth: this.propertyBorderWidth,
-      propertyBorderColor: this.propertyBorderColor,
-      propertyShadowX: this.propertyShadowX,
-      propertyShadowY: this.propertyShadowY,
-      propertyShadowSpread: this.propertyShadowSpread,
-      propertyShadowBlur: this.propertyShadowBlur,
-      propertyShadowColor: this.propertyShadowColor,
-      verticalAlignment: this.verticalAlignment,
-      horizontalAlignment: this.horizontalAlignment,
-      propertyCanvasResolutionX: this.propertyCanvasResolutionX,
-      propertyCanvasResolutionY: this.propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: this.propertySubtitleTexts,
-      currentFrame: this.currentFrame,
-    );
-  }
-
-  OpenFolderState toOpenFolderState(String folder) {
-    return OpenFolderState(
-      propertyPaddingLeft: this.propertyPaddingLeft,
-      propertyPaddingRight: this.propertyPaddingRight,
-      propertyPaddingTop: this.propertyPaddingTop,
-      propertyPaddingBottom: this.propertyPaddingBottom,
-      propertyFontSize: this.propertyFontSize,
-      propertyFontColor: this.propertyFontColor,
-      propertyFontFamily: this.propertyFontFamily,
-      propertyBorderWidth: this.propertyBorderWidth,
-      propertyBorderColor: this.propertyBorderColor,
-      propertyShadowX: this.propertyShadowX,
-      propertyShadowY: this.propertyShadowY,
-      propertyShadowSpread: this.propertyShadowSpread,
-      propertyShadowBlur: this.propertyShadowBlur,
-      propertyShadowColor: this.propertyShadowColor,
-      verticalAlignment: this.verticalAlignment,
-      horizontalAlignment: this.horizontalAlignment,
-      propertyCanvasResolutionX: this.propertyCanvasResolutionX,
-      propertyCanvasResolutionY: this.propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: this.propertySubtitleTexts,
-      currentFrame: this.currentFrame,
-      folder: folder
-    );
-  }
-}
-
-
-class IdleState extends HomePageState {
-  IdleState({
+  HomePageState copyWith({
     int propertyPaddingLeft,
     int propertyPaddingRight,
     int propertyPaddingTop,
     int propertyPaddingBottom,
     int propertyFontSize,
     Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
+    String propertyFontFamily,
     int propertyBorderWidth,
     Color propertyBorderColor,
     int propertyShadowX,
@@ -383,61 +287,17 @@ class IdleState extends HomePageState {
     Color propertyCanvasBackgroundColor,
     List<String> propertySubtitleTexts,
     int currentFrame,
-  }) : super(
-      propertyPaddingLeft: propertyPaddingLeft,
-      propertyPaddingRight: propertyPaddingRight,
-      propertyPaddingTop: propertyPaddingTop,
-      propertyPaddingBottom: propertyPaddingBottom,
-      propertyFontSize: propertyFontSize,
-      propertyFontColor: propertyFontColor,
-      propertyFontFamily:  propertyFontFamily,
-      propertyBorderWidth: propertyBorderWidth,
-      propertyBorderColor: propertyBorderColor,
-      propertyShadowX: propertyShadowX,
-      propertyShadowY: propertyShadowY,
-      propertyShadowSpread: propertyShadowSpread,
-      propertyShadowBlur: propertyShadowBlur,
-      propertyShadowColor: propertyShadowColor,
-      verticalAlignment: verticalAlignment,
-      horizontalAlignment: horizontalAlignment,
-      propertyCanvasResolutionX: propertyCanvasResolutionX,
-      propertyCanvasResolutionY: propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts,
-      currentFrame: currentFrame,
-  );
-
-  copyWith({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
+    FormzStatus status,
+    String openDir,
   }) {
-    return IdleState(
+    return HomePageState(
       propertyPaddingLeft: propertyPaddingLeft ?? this.propertyPaddingLeft,
       propertyPaddingRight: propertyPaddingRight ?? this.propertyPaddingRight,
       propertyPaddingTop: propertyPaddingTop ?? this.propertyPaddingTop,
       propertyPaddingBottom: propertyPaddingBottom ?? this.propertyPaddingBottom,
       propertyFontSize: propertyFontSize ?? this.propertyFontSize,
       propertyFontColor: propertyFontColor ?? this.propertyFontColor,
-      propertyFontFamily:  propertyFontFamily ?? this.propertyFontFamily,
+      propertyFontFamily: propertyFontFamily ?? this.propertyFontFamily,
       propertyBorderWidth: propertyBorderWidth ?? this.propertyBorderWidth,
       propertyBorderColor: propertyBorderColor ?? this.propertyBorderColor,
       propertyShadowX: propertyShadowX ?? this.propertyShadowX,
@@ -452,202 +312,8 @@ class IdleState extends HomePageState {
       propertyCanvasBackgroundColor: propertyCanvasBackgroundColor ?? this.propertyCanvasBackgroundColor,
       propertySubtitleTexts: propertySubtitleTexts ?? this.propertySubtitleTexts,
       currentFrame: currentFrame ?? this.currentFrame,
-    );
-  }
-}
-
-class SavingState extends HomePageState {
-  SavingState({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
-  }) : super(
-      propertyPaddingLeft: propertyPaddingLeft,
-      propertyPaddingRight: propertyPaddingRight,
-      propertyPaddingTop: propertyPaddingTop,
-      propertyPaddingBottom: propertyPaddingBottom,
-      propertyFontSize: propertyFontSize,
-      propertyFontColor: propertyFontColor,
-      propertyFontFamily:  propertyFontFamily,
-      propertyBorderWidth: propertyBorderWidth,
-      propertyBorderColor: propertyBorderColor,
-      propertyShadowX: propertyShadowX,
-      propertyShadowY: propertyShadowY,
-      propertyShadowSpread: propertyShadowSpread,
-      propertyShadowBlur: propertyShadowBlur,
-      propertyShadowColor: propertyShadowColor,
-      verticalAlignment: verticalAlignment,
-      horizontalAlignment: horizontalAlignment,
-      propertyCanvasResolutionX: propertyCanvasResolutionX,
-      propertyCanvasResolutionY: propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts,
-      currentFrame: currentFrame,
-  );
-
-  copyWith({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
-  }) {
-    return SavingState(
-      propertyPaddingLeft: propertyPaddingLeft ?? this.propertyPaddingLeft,
-      propertyPaddingRight: propertyPaddingRight ?? this.propertyPaddingRight,
-      propertyPaddingTop: propertyPaddingTop ?? this.propertyPaddingTop,
-      propertyPaddingBottom: propertyPaddingBottom ?? this.propertyPaddingBottom,
-      propertyFontSize: propertyFontSize ?? this.propertyFontSize,
-      propertyFontColor: propertyFontColor ?? this.propertyFontColor,
-      propertyFontFamily:  propertyFontFamily ?? this.propertyFontFamily,
-      propertyBorderWidth: propertyBorderWidth ?? this.propertyBorderWidth,
-      propertyBorderColor: propertyBorderColor ?? this.propertyBorderColor,
-      propertyShadowX: propertyShadowX ?? this.propertyShadowX,
-      propertyShadowY: propertyShadowY ?? this.propertyShadowY,
-      propertyShadowSpread: propertyShadowSpread ?? this.propertyShadowSpread,
-      propertyShadowBlur: propertyShadowBlur ?? this.propertyShadowBlur,
-      propertyShadowColor: propertyShadowColor ?? this.propertyShadowColor,
-      verticalAlignment: verticalAlignment ?? this.verticalAlignment,
-      horizontalAlignment: horizontalAlignment ?? this.horizontalAlignment,
-      propertyCanvasResolutionX: propertyCanvasResolutionX ?? this.propertyCanvasResolutionX,
-      propertyCanvasResolutionY: propertyCanvasResolutionY ?? this.propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: propertyCanvasBackgroundColor ?? this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts ?? this.propertySubtitleTexts,
-      currentFrame: currentFrame ?? this.currentFrame,
-    );
-  }
-}
-
-class OpenFolderState extends HomePageState {
-  final String folder;
-  OpenFolderState({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
-    this.folder,
-  }) : super(
-      propertyPaddingLeft: propertyPaddingLeft,
-      propertyPaddingRight: propertyPaddingRight,
-      propertyPaddingTop: propertyPaddingTop,
-      propertyPaddingBottom: propertyPaddingBottom,
-      propertyFontSize: propertyFontSize,
-      propertyFontColor: propertyFontColor,
-      propertyFontFamily:  propertyFontFamily,
-      propertyBorderWidth: propertyBorderWidth,
-      propertyBorderColor: propertyBorderColor,
-      propertyShadowX: propertyShadowX,
-      propertyShadowY: propertyShadowY,
-      propertyShadowSpread: propertyShadowSpread,
-      propertyShadowBlur: propertyShadowBlur,
-      propertyShadowColor: propertyShadowColor,
-      verticalAlignment: verticalAlignment,
-      horizontalAlignment: horizontalAlignment,
-      propertyCanvasResolutionX: propertyCanvasResolutionX,
-      propertyCanvasResolutionY: propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts,
-      currentFrame: currentFrame,
-  );
-
-  copyWith({
-    int propertyPaddingLeft,
-    int propertyPaddingRight,
-    int propertyPaddingTop,
-    int propertyPaddingBottom,
-    int propertyFontSize,
-    Color propertyFontColor,
-    String propertyFontFamily, // nullable to default font
-    int propertyBorderWidth,
-    Color propertyBorderColor,
-    int propertyShadowX,
-    int propertyShadowY,
-    int propertyShadowSpread,
-    int propertyShadowBlur,
-    Color propertyShadowColor,
-    SubtitleVerticalAlignment verticalAlignment,
-    SubtitleHorizontalAlignment horizontalAlignment,
-    int propertyCanvasResolutionX,
-    int propertyCanvasResolutionY,
-    Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
-    int currentFrame,
-    String folder,
-  }) {
-    return OpenFolderState(
-      propertyPaddingLeft: propertyPaddingLeft ?? this.propertyPaddingLeft,
-      propertyPaddingRight: propertyPaddingRight ?? this.propertyPaddingRight,
-      propertyPaddingTop: propertyPaddingTop ?? this.propertyPaddingTop,
-      propertyPaddingBottom: propertyPaddingBottom ?? this.propertyPaddingBottom,
-      propertyFontSize: propertyFontSize ?? this.propertyFontSize,
-      propertyFontColor: propertyFontColor ?? this.propertyFontColor,
-      propertyFontFamily:  propertyFontFamily ?? this.propertyFontFamily,
-      propertyBorderWidth: propertyBorderWidth ?? this.propertyBorderWidth,
-      propertyBorderColor: propertyBorderColor ?? this.propertyBorderColor,
-      propertyShadowX: propertyShadowX ?? this.propertyShadowX,
-      propertyShadowY: propertyShadowY ?? this.propertyShadowY,
-      propertyShadowSpread: propertyShadowSpread ?? this.propertyShadowSpread,
-      propertyShadowBlur: propertyShadowBlur ?? this.propertyShadowBlur,
-      propertyShadowColor: propertyShadowColor ?? this.propertyShadowColor,
-      verticalAlignment: verticalAlignment ?? this.verticalAlignment,
-      horizontalAlignment: horizontalAlignment ?? this.horizontalAlignment,
-      propertyCanvasResolutionX: propertyCanvasResolutionX ?? this.propertyCanvasResolutionX,
-      propertyCanvasResolutionY: propertyCanvasResolutionY ?? this.propertyCanvasResolutionY,
-      propertyCanvasBackgroundColor: propertyCanvasBackgroundColor ?? this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts ?? this.propertySubtitleTexts,
-      currentFrame: currentFrame ?? this.currentFrame,
-      folder: folder ?? this.folder
+      status: status ?? this.status,
+      openDir: openDir ?? this.openDir,
     );
   }
 }
@@ -655,33 +321,36 @@ class OpenFolderState extends HomePageState {
 class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   final FontManager _fontManager;
   HomePageBloc()
-    : _fontManager = FontManager();
-
-  @override
-  HomePageState get initialState => IdleState(
-    propertyPaddingLeft: 0,
-    propertyPaddingRight: 0,
-    propertyPaddingTop: 0,
-    propertyPaddingBottom: 0,
-    propertyFontSize: 28,
-    propertyFontColor: Colors.white,
-    propertyFontFamily: null,
-    propertyBorderWidth: 0,
-    propertyBorderColor: ColorPalette.accentColor,
-    propertyShadowX: 0,
-    propertyShadowY: 0,
-    propertyShadowSpread: 0,
-    propertyShadowBlur: 0,
-    propertyShadowColor: Colors.black,
-    verticalAlignment: SubtitleVerticalAlignment.Center,
-    horizontalAlignment: SubtitleHorizontalAlignment.Center,
-    propertyCanvasResolutionX: 1920,
-    propertyCanvasResolutionY: 1080,
-    // propertyCanvasBackgroundColor: ColorPalette.secondaryColor,
-    propertyCanvasBackgroundColor: Color(0xff253643),
-    propertySubtitleTexts: List<String>(),
-    currentFrame: 0,
-  );
+    : 
+      _fontManager = FontManager(),
+      super(
+        HomePageState(
+          propertyPaddingLeft: 0,
+          propertyPaddingRight: 0,
+          propertyPaddingTop: 0,
+          propertyPaddingBottom: 0,
+          propertyFontSize: 28,
+          propertyFontColor: Colors.white,
+          propertyFontFamily: null,
+          propertyBorderWidth: 0,
+          propertyBorderColor: ColorPalette.accentColor,
+          propertyShadowX: 0,
+          propertyShadowY: 0,
+          propertyShadowSpread: 0,
+          propertyShadowBlur: 0,
+          propertyShadowColor: Colors.black,
+          verticalAlignment: SubtitleVerticalAlignment.Center,
+          horizontalAlignment: SubtitleHorizontalAlignment.Center,
+          propertyCanvasResolutionX: 1920,
+          propertyCanvasResolutionY: 1080,
+          // propertyCanvasBackgroundColor: ColorPalette.secondaryColor,
+          propertyCanvasBackgroundColor: Color(0xff253643),
+          propertySubtitleTexts: [],
+          currentFrame: 0,
+          status: FormzStatus.pure,
+          openDir: ''
+        )
+      );
 
   @override
   Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
@@ -735,14 +404,16 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   }
 
   Stream<HomePageState> _mapSaveImageEventToState(SaveImageEvent event) async* {
-    Size resolution = Size(this.state.propertyCanvasResolutionX.toDouble(), this.state.propertyCanvasResolutionY.toDouble());
-    for(int i = 0; i < this.state.propertySubtitleTexts.length; i++) {
-      yield state.toSavingState().copyWith(
-        currentFrame: i
+    final currentState = state;
+    Size resolution = Size(currentState.propertyCanvasResolutionX.toDouble(), currentState.propertyCanvasResolutionY.toDouble());
+    for(int i = 0; i < currentState.propertySubtitleTexts.length; i++) {
+      yield currentState.copyWith(
+        currentFrame: i,
+        status: FormzStatus.submissionInProgress
       );
       event.painter.update(
         span: TextSpan(
-          text: "${state.propertySubtitleTexts[i]}",
+          text: '${state.propertySubtitleTexts[i]}',
           style: TextStyle(
             fontFamily: state.propertyFontFamily,
             color: state.propertyFontColor,
@@ -750,65 +421,88 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           ),
         ),
       );
-      await event.painter.saveImage(resolution, resolution, event.folder ?? "results", "image_$i");
+      await event.painter.saveImage(resolution, resolution, event.folder ?? 'results', 'image_$i');
     }
 
     if(Platform.isMacOS) {
       Directory appDocDir = await getApplicationDocumentsDirectory();
-      String path = p.join(appDocDir.path, "results");
-      yield state.toOpenFolderState(path);
+      String path = p.join(appDocDir.path, 'results');
+      yield state.copyWith(
+        status: FormzStatus.submissionSuccess,
+        openDir: path
+      );
     } else {
-      yield state.toOpenFolderState(event.folder ?? "results");
+      yield state.copyWith(
+        status: FormzStatus.submissionSuccess,
+        openDir: event.folder ?? 'results'
+      );
     }
-    yield state.toIdleState();
+    yield state.copyWith(openDir: '');
   }
   
   Stream<HomePageState> _mapNextFrameEventToState(NextFrameEvent event) async* {
-    int maxLength = this.state.propertySubtitleTexts.length;
-    yield state.toIdleState().copyWith(
-      currentFrame: Math.max(0, Math.min(this.state.currentFrame + 1, maxLength - 1))
+    final currentState = state;
+    int maxLength = currentState.propertySubtitleTexts.length;
+    yield state.copyWith(
+      status: FormzStatus.pure,
+      currentFrame: Math.max(0, Math.min(currentState.currentFrame + 1, maxLength - 1))
     );
   }
   Stream<HomePageState> _mapPreviousFrameEventToState(PreviousFrameEvent event) async* {
-    yield state.toIdleState().copyWith(
-      currentFrame: Math.max(this.state.currentFrame - 1, 0)
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
+      currentFrame: Math.max(currentState.currentFrame - 1, 0)
     );
   }
   Stream<HomePageState> _mapPropertyPaddingLeftEventToState(PropertyPaddingLeftEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyPaddingLeft: event.value
     );
   }
   Stream<HomePageState> _mapPropertyPaddingRightEventToState(PropertyPaddingRightEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
       propertyPaddingRight: event.value
     );
   }
   Stream<HomePageState> _mapPropertyPaddingTopEventToState(PropertyPaddingTopEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
      propertyPaddingTop: event.value
     );
   }
   Stream<HomePageState> _mapPropertyPaddingBottomEventToState(PropertyPaddingBottomEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyPaddingBottom: event.value
     );
   }
   Stream<HomePageState> _mapPropertyFontSizeEventToState(PropertyFontSizeEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyFontSize: event.value
     );
   }
   Stream<HomePageState> _mapPropertyFontColorEventToState(PropertyFontColorEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyFontColor: event.color
     );
   }
   Stream<HomePageState> _mapPropertyFontTtfEventToState(PropertyFontTtfEvent event) async* {
+    final currentState = state;
     try {
       if(_fontManager.contains(event.fontPath)) return;
       await _fontManager.addFont(event.fontPath.toLowerCase(), event.fontPath);
-      yield state.toIdleState().copyWith(
+      yield currentState.copyWith(
+        status: FormzStatus.pure,
         propertyFontFamily: event.fontPath
       );
     } catch(err) {
@@ -816,74 +510,101 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     }
   }
   Stream<HomePageState> _mapPropertyBorderSizeEventToState(PropertyBorderSizeEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyBorderWidth: event.value
     );
   }
   Stream<HomePageState> _mapPropertyBorderColorEventToState(PropertyBorderColorEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyBorderColor: event.color
     );
   }
   Stream<HomePageState> _mapPropertyShadowOffsetXEventToState(PropertyShadowOffsetXEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyShadowX: event.value
     );
   }
   Stream<HomePageState> _mapPropertyShadowOffsetYEventToState(PropertyShadowOffsetYEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyShadowY: event.value
     );
   }
   Stream<HomePageState> _mapPropertyShadowSpreadEventToState(PropertyShadowSpreadEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyShadowSpread: event.value
     );
   }
   Stream<HomePageState> _mapPropertyShadowBlurEventToState(PropertyShadowBlurEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyShadowBlur: event.value
     );
   }
   Stream<HomePageState> _mapPropertyShadowColorEventToState(PropertyShadowColorEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyShadowColor: event.color
     );
   }
   Stream<HomePageState> _mapPropertyAlignmentHorizontalEventToState(PropertyAlignmentHorizontalEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       horizontalAlignment: event.alignment
     );
   }
   Stream<HomePageState> _mapPropertyAlignmentVerticalEventToState(PropertyAlignmentVerticalEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       verticalAlignment: event.alignment
     );
   }
   Stream<HomePageState> _mapPropertyCanvasResolutionXEventToState(PropertyCanvasResolutionXEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyCanvasResolutionX: event.value
     );
   }
   Stream<HomePageState> _mapPropertyCanvasResolutionYEventToState(PropertyCanvasResolutionYEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyCanvasResolutionY: event.value
     );
   }
   Stream<HomePageState> _mapPropertyCanvasColorEventToState(PropertyCanvasColorEvent event) async* {
-    yield state.toIdleState().copyWith(
+    final currentState = state;
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
       propertyCanvasBackgroundColor: event.color
     );
   }
   Stream<HomePageState> _mapPropertySubtitleTextEventToState(PropertySubtitleTextEvent event) async* {
+    final currentState = state;
     if(event.text.isEmpty)  {
-      yield state.toIdleState().copyWith(
+      yield currentState.copyWith(
+        status: FormzStatus.pure,
         propertySubtitleTexts: []
       );
       return;
     }
-    yield state.toIdleState().copyWith(
-      propertySubtitleTexts: event.text.split("\n")
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
+      propertySubtitleTexts: event.text.split('\n')
     );
   }
 

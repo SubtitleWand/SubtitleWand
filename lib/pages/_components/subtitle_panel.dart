@@ -314,16 +314,16 @@ class SubtitlePainter extends CustomPainter {
       TextAlign align = TextAlign.center;
       if(subtitleHorizontalAlignment == SubtitleHorizontalAlignment.Left) align = TextAlign.left;
       if(subtitleHorizontalAlignment == SubtitleHorizontalAlignment.Right) align = TextAlign.right;
-      this._textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
+      _textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: align, text: span);
     }
-    if(subtitleAlignment != null) this._subtitleAlignment = subtitleAlignment;
-    if(span != null) this._textPainter.text = span;
-    if(canvasResolution != null) this._canvasResolution = canvasResolution;
-    if(padding != null) this._padding = padding;
-    if(borderPaint != null) this._borderPaint = borderPaint;
-    if(shadows != null) this._shadows = shadows;
-    if(isRenderBackground != null) this._isRenderBackground = isRenderBackground;
-    if(canvasBackgroundColor != null) this._canvasBackgroundColor = canvasBackgroundColor;
+    if(subtitleAlignment != null) _subtitleAlignment = subtitleAlignment;
+    if(span != null) _textPainter.text = span;
+    if(canvasResolution != null) _canvasResolution = canvasResolution;
+    if(padding != null) _padding = padding;
+    if(borderPaint != null) _borderPaint = borderPaint;
+    if(shadows != null) _shadows = shadows;
+    if(isRenderBackground != null) _isRenderBackground = isRenderBackground;
+    if(canvasBackgroundColor != null) _canvasBackgroundColor = canvasBackgroundColor;
     _update = true;
   }
 
@@ -335,30 +335,30 @@ class SubtitlePainter extends CustomPainter {
     PictureRecorder recorder = PictureRecorder();
     Canvas canvas = Canvas(recorder);
 
-    bool originalSettingBackground = this._isRenderBackground;
-    this._isRenderBackground = false;
+    bool originalSettingBackground = _isRenderBackground;
+    _isRenderBackground = false;
     
-    this.paint(canvas, canvasSize);
+    paint(canvas, canvasSize);
 
-    this._isRenderBackground = originalSettingBackground;
+    _isRenderBackground = originalSettingBackground;
     
     Image image = await recorder.endRecording().toImage(resolutionSize.width.toInt(), resolutionSize.height.toInt());
     var pngBytes = await image.toByteData(format: ImageByteFormat.png);
 
     // create folder first, but no mac, mac will create file with folders
-    if(!Platform.isMacOS && !await Directory("$directory").exists()) {
-      await Directory("$directory").create();
+    if(!Platform.isMacOS && !await Directory('$directory').exists()) {
+      await Directory('$directory').create();
     }
 
     if(Platform.isMacOS) {
       Directory appDocDir = await getApplicationDocumentsDirectory();
-      String path = p.join(appDocDir.path, "$directory", "$snapshot.png");
+      String path = p.join(appDocDir.path, '$directory', '$snapshot.png');
       File createdFile = await File('$path').create(recursive: true);
       await createdFile.writeAsBytes(pngBytes.buffer.asInt8List());
-      unawaited(LoggerUtil.getInstance().log("createFile: $path"));
+      unawaited(LoggerUtil.getInstance().log('createFile: $path'));
     } else {
       await File('$directory/$snapshot.png').writeAsBytes(pngBytes.buffer.asInt8List());
-      unawaited(LoggerUtil.getInstance().log("createFile: $directory/$snapshot.png"));
+      unawaited(LoggerUtil.getInstance().log('createFile: $directory/$snapshot.png'));
     }
   }
 

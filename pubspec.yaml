@@ -22,19 +22,22 @@ dependencies:
   file_picker: 1.4.3+2
   draggable_scrollbar: ^0.0.4
 
-  bloc: ^3.0.0
-  flutter_bloc: ^3.1.0
-  equatable: ^1.0.3
+  bloc: ^6.1.0
+  flutter_bloc: ^6.1.1
+  equatable: ^1.2.5
+  formz: ^0.3.2
+
 
   path_provider: ^1.6.5
   path_provider_macos: ^0.0.4
-  path: "^1.6.4"
+  path: ^1.6.4
 
-  pedantic: ^1.8.0+1
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.9.2
+
 
 flutter:
   uses-material-design: true

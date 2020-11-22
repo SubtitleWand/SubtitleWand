@@ -43,7 +43,7 @@ class ColorPickerDialogState extends State<ColorPickerDialog> {
       title: const Text('Pick a color!'),
       content: SingleChildScrollView(
         child: Theme(
-          data: Theme.of(context).copyWith(canvasColor: ColorPalette.secondaryColor, textTheme: TextTheme(body1: TextStyle(color: ColorPalette.primaryColor))),
+          data: Theme.of(context).copyWith(canvasColor: ColorPalette.secondaryColor, textTheme: TextTheme(bodyText2: TextStyle(color: ColorPalette.primaryColor))),
           child: ColorPicker(
             pickerColor: pickerColor,
             onColorChanged: (Color changedColor){
@@ -56,13 +56,13 @@ class ColorPickerDialogState extends State<ColorPickerDialog> {
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text('Cancel', style: Theme.of(context).textTheme.subtitle),
+          child: Text('Cancel', style: Theme.of(context).textTheme.subtitle2),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         FlatButton(
-          child: Text('Select', style: Theme.of(context).textTheme.subtitle,),
+          child: Text('Select', style: Theme.of(context).textTheme.subtitle2,),
           onPressed: () {
             Navigator.of(context).pop(pickerColor);
           },

@@ -12,7 +12,7 @@ enum LoggerLevel {
 class LoggerUtil {
   File _jornalFile;
   static LoggerUtil _logger;
-  final String _jornal = "journal.log";
+  final String _jornal = 'journal.log';
 
   LoggerUtil._() {
     _jornalFile = File(_jornal);
@@ -33,23 +33,23 @@ class LoggerUtil {
   }
 
   void clear() {
-    if(level != LoggerLevel.Test) _jornalFile.writeAsStringSync("");
+    if(level != LoggerLevel.Test) _jornalFile.writeAsStringSync('');
   }
 
   Future<void> log(String word, {bool isWriteToJournal = false}) async {
-    if(level != LoggerLevel.Production) print("$word");
+    if(level != LoggerLevel.Production) print('$word');
     if(level == LoggerLevel.Test) return;
-    if(isWriteToJournal) await _jornalFile.writeAsString("[Debug]" + DateTime.now().toIso8601String() + "|" + word, mode: FileMode.writeOnlyAppend);
+    if(isWriteToJournal) await _jornalFile.writeAsString('[Debug]' + DateTime.now().toIso8601String() + '|' + word, mode: FileMode.writeOnlyAppend);
   }
 
   Future<void> logError(String word, {bool isWriteToJournal = false}) async {
-    if(level != LoggerLevel.Production) print("$word");
+    if(level != LoggerLevel.Production) print('$word');
     if(level == LoggerLevel.Test) return;
-    if(isWriteToJournal) await _jornalFile.writeAsString("[Error]" + DateTime.now().toIso8601String() + "|" + word, mode: FileMode.writeOnlyAppend);
+    if(isWriteToJournal) await _jornalFile.writeAsString('[Error]' + DateTime.now().toIso8601String() + '|' + word, mode: FileMode.writeOnlyAppend);
   }
 
   factory LoggerUtil.getInstance() {
-    if(_logger == null) _logger = LoggerUtil._();
+    _logger ??= LoggerUtil._();
     return _logger;
   }
 }

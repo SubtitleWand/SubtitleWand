@@ -18,16 +18,16 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart'
     show describeEnum;
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart' show LogicalKeyboardKey, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formz/formz.dart';
 import 'package:subtitle_wand/components/project/attribute_form_field.dart';
-import 'package:subtitle_wand/components/project/color_picker_dialog.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
+import 'package:subtitle_wand/pages/_components/attribute.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
 
@@ -70,9 +70,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   TextEditingController _blurTextCon;
   // Properties - Aligment
   //ignore: unused_field
-  SubtitleVerticalAlignment _verticleAlignment = SubtitleVerticalAlignment.Bottom;
+  final SubtitleVerticalAlignment _verticleAlignment = SubtitleVerticalAlignment.Bottom;
   //ignore: unused_field
-  SubtitleHorizontalAlignment _horizontalAlignment = SubtitleHorizontalAlignment.Center;
+  final SubtitleHorizontalAlignment _horizontalAlignment = SubtitleHorizontalAlignment.Center;
   // Properties - Canvas
   TextEditingController _canvasResolutionXTextCon;
   TextEditingController _canvasResolutionYTextCon;
@@ -82,11 +82,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget frameControlButton(BuildContext context, {
     bool isMinimize,
     Color dynamicButtonColor,
-    String title = "Untitled",
+    String title = 'Untitled',
     void Function() onTap,
     IconData iconData,
   }){
-    TextStyle btnTextStyle = Theme.of(context).textTheme.subtitle;
+    TextStyle btnTextStyle = Theme.of(context).textTheme.subtitle2;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             <Widget>[
               Icon(iconData, color: btnTextStyle.color,),
               SizedBox(height: 8,),
-              Text("$title", textAlign: TextAlign.center, style: btnTextStyle, overflow: TextOverflow.ellipsis,),
+              Text('$title', textAlign: TextAlign.center, style: btnTextStyle, overflow: TextOverflow.ellipsis,),
             ],
           )
         ),
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
     f1Color = f2Color = defaultKey;
     RawKeyboard.instance.addListener((e){
-      if(_bloc.state is MPB.SavingState) return;
+      if(_bloc.state.status.isSubmissionInProgress) return;
       final bool isKeyDown = e is RawKeyDownEvent;
       final bool isKeyUp = e is RawKeyUpEvent;
 
@@ -211,8 +211,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       _bloc.add(MPB.PropertyCanvasResolutionYEvent(int.tryParse(_canvasResolutionYTextCon.text) ?? 0));
     });
     // Properties - Text
-    _subtilteTextController = TextEditingController(text: "")..addListener((){
-      _bloc.add(MPB.PropertySubtitleTextEvent(_subtilteTextController.text ?? ""));
+    _subtilteTextController = TextEditingController(text: '')..addListener((){
+      _bloc.add(MPB.PropertySubtitleTextEvent(_subtilteTextController.text ?? ''));
     });
   }
 
@@ -229,15 +229,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         style: TextStyle(color: ColorPalette.fontColor),
         child: Container(
           child: BlocListener<MPB.HomePageBloc, MPB.HomePageState>(
-            bloc: _bloc,
+            cubit: _bloc,
             listener: (context, state) {
-              if(state is MPB.OpenFolderState) {
+              if(state.status.isSubmissionSuccess && state.openDir.isNotEmpty) {
+                final path = state.openDir;
                 if(Platform.isWindows) {
-                  Process.runSync("explorer", [state.folder], runInShell: true, workingDirectory: Directory.current.path);
+                  Process.runSync('explorer', [path], runInShell: true, workingDirectory: Directory.current.path);
                 } else if(Platform.isLinux) {
-                  Process.runSync("nautilus", [state.folder], runInShell: true, workingDirectory: Directory.current.path);
+                  Process.runSync('nautilus', [path], runInShell: true, workingDirectory: Directory.current.path);
                 } else if(Platform.isMacOS) {
-                  Process.runSync("open", [state.folder], runInShell: true, workingDirectory: Directory.current.path);
+                  Process.runSync('open', [path], runInShell: true, workingDirectory: Directory.current.path);
                 }
               }
               // TextAlign align = TextAlign.center;
@@ -272,16 +273,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               setState(() {});
             },
             child: BlocBuilder<MPB.HomePageBloc, MPB.HomePageState>(
-              bloc: _bloc,
-              condition: (prev, state) {
-                // bool isPrevIdleState = prev is MPB.IdleState;
-                bool isPrevSavingState = prev is MPB.SavingState;
-                // bool isIdleState = prev is MPB.IdleState;
-                bool isSavingState = state is MPB.SavingState;
-                return !(isSavingState && isPrevSavingState);
-              },
+              cubit: _bloc,
+              // buildWhen: (prev, state) {
+              //   // bool isPrevIdleState = prev is MPB.IdleState;
+              //   // bool isPrevSavingState = prev is MPB.SavingState;
+              //   // bool isIdleState = prev is MPB.IdleState;
+              //   // bool isSavingState = state is MPB.SavingState;
+              //   // return !(isSavingState && isPrevSavingState);
+              //   // return !(state.status.isSubmissionInProgress);
+              // },
               builder: (context, state) {
-                bool isSavingState = state is MPB.SavingState;
+                // bool isSavingState = state is MPB.SavingState;
+                bool isSavingState = state.status.isSubmissionInProgress;
                 return AbsorbPointer(
                   absorbing: isSavingState,
                   child: ColorFiltered(
@@ -295,7 +298,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Subtitle wand", style: Theme.of(context).textTheme.title,),
+                              Text('Subtitle wand', style: Theme.of(context).textTheme.headline6,),
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -304,7 +307,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                     textColor: ColorPalette.fontColor,
                                     disabledColor: ColorPalette.accentColor,
                                     icon: Icon(Icons.save_alt),
-                                    label: Text("Save Image"),
+                                    label: Text('Save Image'),
                                     onPressed: state.propertySubtitleTexts.isNotEmpty ? () async {
                                       // String path = await FilePicker.getFilePath();
                                       // if(path == null || path.isEmpty) return;
@@ -388,7 +391,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                   context,
                                                   isMinimize: true, // isMinimizeFrameControl,
                                                   dynamicButtonColor: f1Color,
-                                                  title: "(F1)\nPrevious Frame",
+                                                  title: '(F1)\nPrevious Frame',
                                                   iconData: Icons.keyboard_arrow_left,
                                                   onTap: (){ _bloc.add(MPB.PreviousFrameEvent()); }
                                                 ),
@@ -397,7 +400,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                   isMinimize: true, // isMinimizeFrameControl,
                                                   dynamicButtonColor: f2Color,
                                                   iconData: Icons.keyboard_arrow_right,
-                                                  title: "(F2)\nNext Frame",
+                                                  title: '(F2)\nNext Frame',
                                                   onTap: (){ _bloc.add(MPB.NextFrameEvent()); }
                                                 )
                                               ],
@@ -424,78 +427,123 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                     padding: EdgeInsets.symmetric(horizontal: 8),
                                     children: <Widget>[
                                       SizedBox(height: 16,),
-                                      Text("Properites:", style: Theme.of(context).textTheme.title,),
+                                      Text('Properites:', style: Theme.of(context).textTheme.headline6,),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Padding",
-                                        children: <Widget>[
-                                          _PageComponent.minimalAttribute(context, title: "Left", controller: _paddingLeftTextCon),
+                                      AttributePanel(
+                                        title: 'Padding',
+                                        children: [
+                                          TextAttribute(
+                                            title: 'Left',
+                                            controller: _paddingLeftTextCon,
+                                          ),
                                           SizedBox(height: 4,),
-                                          _PageComponent.minimalAttribute(context, title: "Right", controller: _paddingRightTextCon),
+                                          TextAttribute(
+                                            title: 'Right',
+                                            controller: _paddingRightTextCon,
+                                          ),
                                           SizedBox(height: 4,),
-                                          _PageComponent.minimalAttribute(context, title: "Top", controller: _paddingTopTextCon),
+                                          TextAttribute(
+                                            title: 'Top',
+                                            controller: _paddingTopTextCon,
+                                          ),
                                           SizedBox(height: 4,),
-                                          _PageComponent.minimalAttribute(context, title: "Bottom", controller: _paddingBottomTextCon),
+                                          TextAttribute(
+                                            title: 'Bottom',
+                                            controller: _paddingBottomTextCon,
+                                          ),
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Font",
-                                        children: <Widget>[
-                                          _PageComponent.minimalAttribute(context, title: "Size", controller: _fontSizeTextCon),
+                                      AttributePanel(
+                                        title: 'Font',
+                                        children: [
+                                          TextAttribute(
+                                            title: 'Size',
+                                            controller: _fontSizeTextCon,
+                                          ),
                                           SizedBox(height: 8,),
-                                          _PageComponent.colorAttribute(context, title: "Color", onSelected: (color) => _bloc.add(MPB.PropertyFontColorEvent(color)), color: state.propertyFontColor),
+                                          ColorAttribute(
+                                            title: 'Color',
+                                            onSelected: (color) => _bloc.add(MPB.PropertyFontColorEvent(color)),
+                                            color: state.propertyFontColor
+                                          ),
                                           SizedBox(height: 12,),
-                                          _PageComponent.buttonAttribute(context, title: "TTF", btnName: "Choose a file", onPressed: () async {
-                                            File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: "ttf");
-                                            if(file == null) return;
-                                            _bloc.add(MPB.PropertyFontTtfEvent(file.path));
-                                          }),
+                                          ButtonAttribute(
+                                            childWidth: null,
+                                            title: 'TTF',
+                                            buttonName: 'Choose a file',
+                                            onPressed: () async {
+                                              File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'ttf');
+                                              if(file == null) return;
+                                              _bloc.add(MPB.PropertyFontTtfEvent(file.path));
+                                            },
+                                          )
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Border",
-                                        children: <Widget>[
-                                          _PageComponent.minimalAttribute(context, title: "Width", controller: _borderWidthTextCon),
-                                          SizedBox(height: 12),
-                                          _PageComponent.colorAttribute(context, title: "Color", onSelected: (color) => _bloc.add(MPB.PropertyBorderColorEvent(color)), color: state.propertyBorderColor),
+                                      AttributePanel(
+                                        title: 'Border',
+                                        children: [
+                                          TextAttribute(
+                                            title: 'Width',
+                                            controller: _borderWidthTextCon,
+                                          ),
+                                          SizedBox(height: 12,),
+                                          ColorAttribute(
+                                            title: 'Color',
+                                            onSelected: (color) => _bloc.add(MPB.PropertyBorderColorEvent(color)),
+                                            color: state.propertyBorderColor,
+                                          )
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Shadow",
-                                        children: <Widget>[
-                                          _PageComponent.minimalAttribute(context, isMinusable: true, title: "OffsetX", titleWidth: 64, controller: _offsetXTextCon),
+                                      AttributePanel(
+                                        title: 'Shadow',
+                                        children: [
+                                          TextAttribute(
+                                            title: 'OffsetX',
+                                            titleWidth: 64,
+                                            type: AttributeFormFieldType.integer,
+                                            controller: _offsetXTextCon,
+                                          ),
                                           SizedBox(height: 4,),
-                                          _PageComponent.minimalAttribute(context, isMinusable: true, title: "OffsetY", titleWidth: 64, controller: _offsetYTextCon),
-                                          // SizedBox(height: 4,),
-                                          // _PageComponent.minimalAttribute(context, title: "Spread", titleWidth: 64, controller: _spreadTextCon),
+                                          TextAttribute(
+                                            title: 'OffsetY',
+                                            titleWidth: 64,
+                                            type: AttributeFormFieldType.integer,
+                                            controller: _offsetYTextCon,
+                                          ),
                                           SizedBox(height: 4,),
-                                          _PageComponent.minimalAttribute(context, title: "Blur", titleWidth: 64, controller: _blurTextCon),
-                                          SizedBox(height: 8,),
-                                          _PageComponent.colorAttribute(context, title: "Color", titleWidth: 64, onSelected: (color) => _bloc.add(MPB.PropertyShadowColorEvent(color)), color: state.propertyShadowColor),
-                                          SizedBox(height: 8,),
+                                          TextAttribute(
+                                            title: 'Blur',
+                                            titleWidth: 64,
+                                            controller: _blurTextCon,
+                                          ),
+                                          SizedBox(height: 4,),
+                                          ColorAttribute(
+                                            title: 'Color',
+                                            onSelected: (color) => _bloc.add(MPB.PropertyShadowColorEvent(color)),
+                                            color: state.propertyShadowColor,
+                                            titleWidth: 64,
+                                          )
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Alignment",
-                                        children: <Widget>[
+                                      AttributePanel(
+                                        title: 'Alignment',
+                                        children: [
                                           Padding(
                                             padding: EdgeInsets.only(left: 24),
-                                            child: Text("Horizontal Alignment"),
+                                            child: Text('Horizontal Alignment'),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.symmetric(horizontal: 16),
-                                            child: _PageComponent.selectorAttribute(
-                                              context,
-                                              selectionA: "Left",
-                                              selectionB: "Center",
-                                              selectionC: "Right",
+                                            child: SelectorAttribute(
+                                              selectionA: 'Left',
+                                              selectionB: 'Center',
+                                              selectionC: 'Right',
                                               selected: describeEnum(state.horizontalAlignment),
-                                              onSelected: (selected) {
-                                                //print(selected);
+                                              onSelect: (selected) {
                                                 SubtitleHorizontalAlignment.values.forEach(
                                                   (alignment){
                                                     if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
@@ -504,22 +552,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                   }
                                                 );
                                                 return;
-                                              }
+                                              },
                                             )
                                           ),
                                           Padding(
                                             padding: EdgeInsets.only(left: 24),
-                                            child: Text("Vertical Alignment"),
+                                            child: Text('Vertical Alignment'),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.symmetric(horizontal: 16),
-                                            child: _PageComponent.selectorAttribute(
-                                              context,
-                                              selectionA: "Top",
-                                              selectionB: "Center",
-                                              selectionC: "Bottom",
+                                            child: SelectorAttribute(
+                                              selectionA: 'Top',
+                                              selectionB: 'Center',
+                                              selectionC: 'Bottom',
                                               selected: describeEnum(state.verticalAlignment),
-                                              onSelected: (selected) {
+                                              onSelect: (selected) {
                                                 SubtitleVerticalAlignment.values.forEach(
                                                   (alignment){
                                                     if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
@@ -528,45 +575,55 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                   }
                                                 );
                                                 return;
-                                              }
+                                              },
                                             )
                                           ),
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Canvas",
-                                        children: <Widget>[
+                                      AttributePanel(
+                                        title: 'Canvas',
+                                        children: [
                                           Padding(
                                             padding: EdgeInsets.only(left: 24),
-                                            child: Text("Resolution"),
+                                            child: Text('Resolution'),
                                           ),
                                           SizedBox(height: 8,),
                                           Padding(
                                             padding: EdgeInsets.only(left: 16),
-                                            child: _PageComponent.minimalAttribute(context, title: "X", controller: _canvasResolutionXTextCon),
+                                            child: TextAttribute(
+                                              title: 'X',
+                                              controller: _canvasResolutionXTextCon
+                                            ),
                                           ),
                                           SizedBox(height: 4,),
                                           Padding(
                                             padding: EdgeInsets.only(left: 16),
-                                            child: _PageComponent.minimalAttribute(context, title: "Y", controller: _canvasResolutionYTextCon),
+                                            child: TextAttribute(
+                                              title: 'Y',
+                                              controller: _canvasResolutionYTextCon
+                                            ),
                                           ),
                                           SizedBox(height: 16,),
                                           Padding(
                                             padding: EdgeInsets.only(left: 24),
-                                            child: Text("Background"),
+                                            child: Text('Background'),
                                           ),
                                           SizedBox(height: 8,),
                                           Padding(
                                             padding: EdgeInsets.only(left: 16),
-                                            child: _PageComponent.colorAttribute(context, title: "Color", onSelected: (color) => _bloc.add(MPB.PropertyCanvasColorEvent(color)), color: state.propertyCanvasBackgroundColor),
-                                          ),
+                                            child: ColorAttribute(
+                                              title: 'Color',
+                                              onSelected: (color) => _bloc.add(MPB.PropertyCanvasColorEvent(color)),
+                                              color: state.propertyCanvasBackgroundColor
+                                            ),
+                                          )
                                         ],
                                       ),
                                       SizedBox(height: 8,),
-                                      _PageComponent.attributePanel(context,
-                                        title: "Text",
-                                        children: <Widget>[
+                                      AttributePanel(
+                                        title: 'Text',
+                                        children: [
                                           Container(
                                             constraints: BoxConstraints(
                                               minHeight: 120,
@@ -587,7 +644,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                             )
                                           )
                                         ],
-                                      ),
+                                      )
                                     ],
                                   ),
                                 )
@@ -603,12 +660,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Version: 0.0.1",),
+                              Text('Version: 0.0.1',),
                               isSavingState ?
                               Container(
                                 width: 160,
                                 child: BlocBuilder<MPB.HomePageBloc, MPB.HomePageState>(
-                                  bloc: _bloc,
+                                  cubit: _bloc,
                                   builder: (context, lpState) {
                                     return LinearProgressIndicator(
                                       backgroundColor: ColorPalette.secondaryColor,
@@ -632,230 +689,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           )
         ),
       )
-    );
-  }
-}
-
-class _PageComponent {
-  static Widget attributePanel(
-    BuildContext context,
-    {
-      @required List<Widget> children,
-      String title = "Untitled",
-    }
-  ) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        //color: ColorPalette.secondaryColor,
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ColorPalette.accentColor,
-            ColorPalette.secondaryColor,
-          ]
-        ),
-        border: Border.all(color: ColorPalette.accentColor)
-      ),
-      child: ConfigurableExpansionTile(
-        header: Expanded(
-          child: Container(
-            height: 36,
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text("$title", style: Theme.of(context).textTheme.subhead,),
-            )
-          )
-        ),
-        animatedWidgetFollowingHeader: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Icon(Icons.keyboard_arrow_up, color: ColorPalette.fontColor),
-        ),
-        children: <Widget>[
-          Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.only(bottom: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: children
-            ),
-          )
-        ],
-      )
-    );
-  }
-
-  static Widget minimalAttribute(BuildContext context, {
-    bool isMinusable = false,
-    String title,
-    String initialValue,
-    TextEditingController controller,
-    void Function(String) onFieldSubmitted,
-    double titleWidth = 48,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16,),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            width: titleWidth,
-            child: Text("$title", style: Theme.of(context).textTheme.subtitle,),
-          ),
-          SizedBox(width: 4,),
-          Container(
-            width: 36,
-            height: 24,
-            //color: Colors.black, //ColorPalette.accentColor,
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: AttributeFormField(
-              controller: controller,
-              initialValue: initialValue,
-              isMinusable: isMinusable
-            )
-          )
-        ],
-      )
-    );
-  }
-
-  static Widget buttonAttribute(BuildContext context, {
-    String title,
-    String btnName,
-    void Function() onPressed,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16,),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            width: 48,
-            child: Text("$title", style: Theme.of(context).textTheme.subtitle,),
-          ),
-          SizedBox(width: 4,),
-          Container(
-            //color: Colors.black, //ColorPalette.accentColor,
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onPressed,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Center(
-                    child: Text("$btnName", style: Theme.of(context).textTheme.subtitle,),
-                  ),
-                )
-              ),
-            )
-          )
-        ],
-      )
-    );
-  }
-
-  static Widget colorAttribute(BuildContext context, {
-    @required String title,
-    Color color,
-    void Function(Color color) onSelected,
-    double titleWidth = 48,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16,),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            width: titleWidth,
-            child: Text("$title", style: Theme.of(context).textTheme.subtitle,),
-          ),
-          SizedBox(width: 4,),
-          Container(
-            width: 36,
-            height: 24,
-            //color: Colors.black, //ColorPalette.accentColor,
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Material(
-              color: color,
-              child: InkWell(
-                child: Container(
-                  width: 36,
-                  height: 24
-                ),
-                onTap: () async {
-                  Color selectedColor = await showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ColorPickerDialog(initColor: color);
-                    }
-                  );
-                  if(selectedColor == null) return;
-                  onSelected(selectedColor);
-                },
-              ),
-            )
-          )
-        ],
-      )
-    );
-  }
-
-  static Widget selectorAttribute(BuildContext context, {
-    String selectionA,
-    String selectionB,
-    String selectionC,
-    String selected,
-    Null Function(String) onSelected(String selection) 
-  }) {
-    TextStyle focusSelectionStyle = Theme.of(context).textTheme.body2.copyWith(color: ColorPalette.fontColor);
-    TextStyle selectionStyle = Theme.of(context).textTheme.body2.copyWith(color: ColorPalette.primaryColor);
-    Color focusButtonColor = ColorPalette.primaryColor;
-    Color buttonColor = ColorPalette.fontColor;
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: FlatButton(
-            color: selected.toLowerCase() == selectionA.toLowerCase() ? focusButtonColor : buttonColor,
-            padding: EdgeInsets.all(0),
-            child: Text("$selectionA", style: selected == selectionA ? focusSelectionStyle : selectionStyle),
-            onPressed: (){
-              onSelected(selectionA);
-            },
-          ),
-        ),
-        Expanded(
-          child: FlatButton(
-            color: selected.toLowerCase() == selectionB.toLowerCase() ? focusButtonColor : buttonColor,
-            padding: EdgeInsets.all(0),
-            child: Text("$selectionB", style: selected == selectionB ? focusSelectionStyle :  selectionStyle),
-            onPressed: (){
-              onSelected(selectionB);
-            },
-          ),
-        ),
-        Expanded(
-          child: FlatButton(
-            color: selected.toLowerCase() == selectionC.toLowerCase() ? focusButtonColor : buttonColor,
-            padding: EdgeInsets.all(0),
-            child: Text("$selectionC", style: selected == selectionC ? focusSelectionStyle :  selectionStyle),
-            onPressed: (){
-              onSelected(selectionC);
-            },
-          )
-        )
-      ],
     );
   }
 }

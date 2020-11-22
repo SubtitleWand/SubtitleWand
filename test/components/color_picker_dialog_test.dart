@@ -8,7 +8,7 @@ import '../_helper/normalizer_test.dart';
 
 void main() {
   // staturation: white to red, hue: color rotation, value: white to black(lighting)
-  testWidgets("staturation(x) and value(y) test", (tester) async { 
+  testWidgets('staturation(x) and value(y) test', (tester) async { 
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
@@ -38,7 +38,7 @@ void main() {
     final double height = renderBox.size.height;
     await tester.tapAt(renderBox.localToGlobal(Offset(startX, startY)));
     await tester.pump();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect(await result, Colors.white);
 
     result = showDialog<Color>(
@@ -52,7 +52,7 @@ void main() {
     renderBox = tester.renderObject(find.byType(ColorPickerArea));
     await tester.tapAt(renderBox.localToGlobal(Offset(startX, height)));
     await tester.pump();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect(await result, Colors.black);
 
     result = showDialog<Color>(
@@ -66,7 +66,7 @@ void main() {
     renderBox = tester.renderObject(find.byType(ColorPickerArea));
     await tester.tapAt(renderBox.localToGlobal(Offset(width - 0.2, startY)));
     await tester.pump();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect(await result, Color(0xffff0000));
 
     result = showDialog<Color>(
@@ -80,12 +80,12 @@ void main() {
     renderBox = tester.renderObject(find.byType(ColorPickerArea));
     await tester.tapAt(renderBox.localToGlobal(Offset(width, height)));
     await tester.pump();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect(await result, Colors.black);
   });
 
 
-  testWidgets("hue test", (tester) async { 
+  testWidgets('hue test', (tester) async { 
     // f00 -> ff0 -> 0f0 -> 0ff -> 00f -> f0f -> f00
     // width / 7, red yellow green gb blue purple red
     const Color RED_COLOR = Color(0xffff0000);
@@ -130,7 +130,7 @@ void main() {
     await tester.tapAt(satuationValueBox.localToGlobal(Offset(satuationValueBox.size.width - 0.2, 0)));
     // await tester.tapAt(renderBox.localToGlobal(Offset(0, height / 2)));
     await tester.pump();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, RED_COLOR);
 
     // Yellow
@@ -151,7 +151,7 @@ void main() {
       Offset(paddingOffset + span, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, YELLOW_COLOR);
 
     // Green
@@ -172,7 +172,7 @@ void main() {
       Offset(paddingOffset + span * 2, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, GREEN_COLOR);
     // Green blue
     result = showDialog<Color>(
@@ -192,7 +192,7 @@ void main() {
       Offset(paddingOffset + span * 3, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, GREEN_BLUE_COLOR);
 
     // Blue
@@ -213,7 +213,7 @@ void main() {
       Offset(paddingOffset + span * 4, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, BLUE_COLOR);
 
     // Purple
@@ -234,7 +234,7 @@ void main() {
       Offset(paddingOffset + span * 5, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, PURPLE_COLOR);
 
     // Red
@@ -255,11 +255,11 @@ void main() {
       Offset(paddingOffset + span * 6, 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     TestNormalizer.nearEqualColor(await result, RED_COLOR);
   });
 
-  testWidgets("transparency test", (tester) async { 
+  testWidgets('transparency test', (tester) async { 
     await tester.pumpWidget(
       const MaterialApp(
         home: Material(
@@ -288,7 +288,7 @@ void main() {
     final double paddingOffset = 15; // left 15, right 15, (260 - 30) / 6 = 38.3333(span)
     final double span = 38.333;// (width + 48) / 6;
     final double height = renderBox.size.height;
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect((await result).alpha, 255);
 
     // transparency 1
@@ -306,7 +306,7 @@ void main() {
       Offset(-(paddingOffset + span * 6), 0)
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text("Select"));
+    await tester.tap(find.text('Select'));
     expect((await result).alpha, 0);
   });
 }

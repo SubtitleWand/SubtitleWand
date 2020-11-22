@@ -3,3 +3,4 @@ include: package:pedantic/analysis_options.yaml
 linter:
   rules:
     library_prefixes: false
+    omit_local_variable_types: false

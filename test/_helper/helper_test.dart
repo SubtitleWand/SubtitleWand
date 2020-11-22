@@ -23,9 +23,9 @@ void main() {
 
   // flutter test => D:\Project\McDedicatedServer\mc-dedicated-server-go\test
   // flutter test .\test\_helper\helper_test.dart => D:\Project\McDedicatedServer\mc-dedicated-server-go
-  test("Test Directory", () {
+  test('Test Directory', () {
     // expect(Directory.current.path, r"D:\Project\McDedicatedServer\mc-dedicated-server-go\test");
     TestHelper.setUpDirectory();
-    expect(Directory.current.path.endsWith("test"), true);
+    expect(Directory.current.path.endsWith('test'), true);
   });
 }

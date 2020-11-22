@@ -19,6 +19,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 
+enum AttributeFormFieldType {
+  text,
+  digit,
+  integer,
+}
+
 ///
 /// Creates an attribute form field that allow maximum length 4, and 
 ///
@@ -28,13 +34,15 @@ class AttributeFormField extends StatelessWidget {
   /// init value
   final String initialValue;
   /// when false, only positive number is allowed, true for non-negative numbers.
-  final bool isMinusable;
+  // final bool isNegative;
   // void Function(String) onFieldSubmitted;
+  final AttributeFormFieldType type;
   AttributeFormField({
     Key key,
     this.controller,
     this.initialValue,
-    this.isMinusable = false,
+    this.type
+    // this.isNegative = false,
     // this.onFieldSubmitted
   }) : super(key: key);
 
@@ -43,7 +51,10 @@ class AttributeFormField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       initialValue: initialValue,
-      inputFormatters: isMinusable ? [WhitelistingTextInputFormatter(RegExp(r'^[-]{0,1}\d*$'))] : [WhitelistingTextInputFormatter.digitsOnly],
+      inputFormatters: type == AttributeFormFieldType.integer ? 
+          [FilteringTextInputFormatter.allow(RegExp(r'^[-]{0,1}\d*$'))] : 
+          type == AttributeFormFieldType.digit ?
+            [FilteringTextInputFormatter.digitsOnly] : [], 
       decoration: InputDecoration.collapsed(hintText: null,).copyWith(isDense: true, contentPadding: EdgeInsets.only(top: 8)),
       style: Theme.of(context).textTheme.caption,
       textAlign: TextAlign.center,

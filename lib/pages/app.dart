@@ -30,13 +30,13 @@ class MyApp extends StatelessWidget {
         // See https://github.com/flutter/flutter/wiki/Desktop-shells#fonts
         fontFamily: 'Roboto',
         textTheme: TextTheme(
-          title: TextStyle(
+          headline6: TextStyle(
             color: ColorPalette.fontColor
           ),
-          subtitle: TextStyle(
+          subtitle2: TextStyle(
             color: ColorPalette.fontColor
           ),
-          subhead: TextStyle(
+          subtitle1: TextStyle(
             color: ColorPalette.fontColor
           ),
           caption: TextStyle(

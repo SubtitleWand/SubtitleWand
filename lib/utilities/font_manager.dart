@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 class FontManager {
   final Map<String, FontLoader> _fonts;
   FontManager() :
-    _fonts = Map<String, FontLoader>();
+    _fonts = <String, FontLoader>{};
 
   ///
   /// Assign [fontFamilyName] to flutter's FontLoader, with [pathToTTF] from file system.
@@ -18,7 +18,7 @@ class FontManager {
   Future<void> addFont(String fontFamilyName, String pathToTTF) async {
     File file;
     try {
-      file = File("$pathToTTF");
+      file = File('$pathToTTF');
     } catch(err) {
       // throw err;
       rethrow;
