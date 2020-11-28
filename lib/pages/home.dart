@@ -366,7 +366,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text('Version: 0.0.1',),
+          Text('Version: 0.1.0',),
           isSavingState ?
           Container(
             width: 160,
