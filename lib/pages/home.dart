@@ -35,6 +35,7 @@ import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
 import 'package:subtitle_wand/utilities/logger_util.dart';
+import 'package:subtitle_wand/utilities/process_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -241,13 +242,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 final path = state.openDir;
                 if(Platform.isWindows) {
                   final result = Process.runSync('explorer', [path], runInShell: true, workingDirectory: Directory.current.path);
-                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
+                  if(!ProcessUtil.isEmpty(result.stderr)) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 } else if(Platform.isLinux) {
                   final result = Process.runSync('nautilus', [path], runInShell: true, workingDirectory: Directory.current.path);
-                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
+                  if(!ProcessUtil.isEmpty(result.stderr)) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 } else if(Platform.isMacOS) {
                   final result = Process.runSync('open', [path], runInShell: true, workingDirectory: Directory.current.path);
-                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
+                  if(!ProcessUtil.isEmpty(result.stderr)) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 }
               }
 

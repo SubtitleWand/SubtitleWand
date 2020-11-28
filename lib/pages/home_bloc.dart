@@ -16,6 +16,7 @@ import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/utilities/font_manager.dart';
 import 'package:subtitle_wand/utilities/logger_util.dart';
+import 'package:subtitle_wand/utilities/process_util.dart';
 
 abstract class HomePageEvent extends Equatable {
 }
@@ -544,7 +545,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       runInShell: true,
     );
 
-    if(detectFFmpegResult.stderr != null || detectFFmpegResult.stdout == null) {
+    if(!ProcessUtil.isEmpty(detectFFmpegResult.stderr) || ProcessUtil.isEmpty(detectFFmpegResult.stdout)) {
       unawaited(LoggerUtil.getInstance().logError('FFmpeg not found', isWriteToJournal: true));
       yield currentState.copyWith(
         exception: NotDetectFFmpegException()
@@ -609,8 +610,8 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       workingDirectory: path
     );
 
-    if(ffmpegResult.stderr) unawaited(LoggerUtil.getInstance().logError(ffmpegResult.stderr, isWriteToJournal: true));
-    if(ffmpegResult.stdout) unawaited(LoggerUtil.getInstance().log(ffmpegResult.stdout));
+    if(!ProcessUtil.isEmpty(ffmpegResult.stderr)) unawaited(LoggerUtil.getInstance().logError(ffmpegResult.stderr, isWriteToJournal: true));
+    if(!ProcessUtil.isEmpty(ffmpegResult.stdout)) unawaited(LoggerUtil.getInstance().log(ffmpegResult.stdout));
 
     if(Platform.isMacOS) {
       Directory appDocDir = await getApplicationDocumentsDirectory();
