@@ -4,6 +4,7 @@ import (
 	"github.com/go-flutter-desktop/go-flutter"
 	file_picker "github.com/miguelpruivo/flutter_file_picker/go"
 	path_provider "github.com/go-flutter-desktop/plugins/path_provider"
+	url_launcher "github.com/go-flutter-desktop/plugins/url_launcher"
 )
 
 const windowHeight = 800
@@ -21,4 +22,5 @@ var options = []flutter.Option{
 		VendorName:      "tokenyet.github.io",
 		ApplicationName: "subtitlewand",
 	}),
+	flutter.AddPlugin(&url_launcher.UrlLauncherPlugin{}),
 }

@@ -22,6 +22,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'
     show describeEnum;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart' show LogicalKeyboardKey, PlatformException, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +35,7 @@ import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
 import 'package:subtitle_wand/utilities/logger_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -249,6 +251,42 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 }
               }
 
+              if(state.exception is MPB.NotDetectFFmpegException) {
+                showDialog(
+                  context: context,
+                  child: Dialog(
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      child: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.headline5.copyWith(
+                            color: Colors.black
+                          ),
+                          children: [
+                            TextSpan(text: 'FFmpeg not detected! You should install from '),
+                            TextSpan(
+                              text: 'here', 
+                              style: TextStyle(color: ColorPalette.secondaryColor, decoration: TextDecoration.underline),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url = 'https://ffmpeg.org/download.html';
+                                  if (await canLaunch(url)) {
+                                    await launch(
+                                      url,
+                                      forceSafariVC: false,
+                                    );
+                                  }
+                                }
+                            ),
+                            TextSpan(text: ', and check If ffmpeg is added in enviroment variable.'),
+                          ]
+                        ),
+                      )
+                    )
+                  )
+                );
+              }
+
               _painter.update(
                 shadows: [
                   BoxShadow( // bottomLeft
@@ -378,7 +416,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 disabledColor: ColorPalette.accentColor,
                 icon: Icon(Icons.save_alt),
                 label: Text('Save Image'),
-                onPressed: (state.propertyText.type == MPB.PropertyTextType.plain && state.propertyText.texts.isNotEmpty) ? () async {
+                onPressed: state.propertyText.texts.isNotEmpty ? () async {
                   _bloc.add(MPB.SaveImageEvent(painter: _painter));
                 } : null,
               )

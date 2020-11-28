@@ -537,6 +537,25 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   Stream<HomePageState> _mapSaveVideoEventToState(SaveVideoEvent event) async* {
     final currentState = state;
+    
+    ProcessResult detectFFmpegResult = await Process.run(
+      Platform.isWindows ? 'where' : 'which', 
+      ['ffmpeg'], 
+      runInShell: true,
+    );
+
+    if(detectFFmpegResult.stderr != null || detectFFmpegResult.stdout == null) {
+      unawaited(LoggerUtil.getInstance().logError('FFmpeg not found', isWriteToJournal: true));
+      yield currentState.copyWith(
+        exception: NotDetectFFmpegException()
+      );
+      yield currentState.copyWith(
+        exception: NoException()
+      );
+      return;
+    }
+
+
     yield* _mapSaveImageEventToState(SaveImageEvent(painter: event.painter, folder: event.folder), isOpenDir: false, isRenderTransparent: true);
 
     if(currentState.propertyText.texts[0].startTimestamp == null || currentState.propertyText.texts[0].endTimeStamp == null) return;
