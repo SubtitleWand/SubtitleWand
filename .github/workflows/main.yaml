@@ -26,8 +26,8 @@ on:
     - 'fonts/**'
 
 env:
-  flutter_channel: 'stable'
-  flutter_version: '1.12.13+hotfix.8'
+  flutter_channel: 'beta'
+  flutter_version: '1.22.0-12.4.pre'
 
 jobs:
   # Analyze and test each core package.

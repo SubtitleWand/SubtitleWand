@@ -6,21 +6,21 @@ on:
       - ci-cd-publish-windows/**
 
 env:
-  flutter_channel: 'stable'
-  flutter_version: '1.12.13+hotfix.8'
+  flutter_channel: 'beta'
+  flutter_version: '1.22.0-12.4.pre'
 
 jobs:
   # Analyze and test each core package.
-  build:
-    if: github.actor == github.event.repository.owner.login
+  publish-windows:
+    # if: github.actor == github.event.repository.owner.login
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         folder: ['.']
-        os: [ubuntu-latest]
+        os: [windows-latest]
         include:
-          - os: ubuntu-latest
-            flutter_path: /opt/hostedtoolcache/flutter
+          - os: windows-latest
+            flutter_path: C:\hostedtoolcache\flutter
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
       - name: Cache Golang dependencies
         uses: actions/cache@v1
         with:
-          path: ~/go/pkg/mod
+          path: C:\go\pkg\mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
@@ -62,6 +62,7 @@ jobs:
           sudo apt-get install gcc libc6-dev
           sudo apt-get install libgl1-mesa-dev xorg-dev
           hover build windows
+          rm -rf go/build/outputs/windows/flutter_engine.pdb
 
       - uses: actions/upload-artifact@v1
         with:

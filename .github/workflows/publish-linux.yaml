@@ -6,12 +6,12 @@ on:
       - ci-cd-publish-linux/**
 
 env:
-  flutter_channel: 'stable'
-  flutter_version: '1.12.13+hotfix.8'
+  flutter_channel: 'beta'
+  flutter_version: '1.22.0-12.4.pre'
 
 jobs:
   # Analyze and test each core package.
-  build:
+  publish-linux:
     if: github.actor == github.event.repository.owner.login
     runs-on: ${{ matrix.os }}
     strategy:
