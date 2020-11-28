@@ -19,7 +19,7 @@ dependencies:
   
   configurable_expansion_tile: ^1.0.0
   cupertino_icons: ^0.1.0
-  file_picker: 1.4.3+2
+  file_picker: ^1.13.3
   draggable_scrollbar: ^0.0.4
 
   bloc: ^6.1.0
@@ -32,12 +32,11 @@ dependencies:
   path_provider_macos: ^0.0.4
   path: ^1.6.4
 
+  pedantic: ^1.9.2
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.2
-
 
 flutter:
   uses-material-design: true

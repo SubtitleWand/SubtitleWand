@@ -1,0 +1,10 @@
+#2020/11/24
+Found a strange issue about file_picker not working in this project, but new project. 
+The solution for the project is to 
+1. upgrade hover version,
+2. use clear cache
+3. hover run
+
+I don't know why, but It might be download error or something...? Hopefully clear cache did the job.
+
+***SRT file containt \r\n, will affect dart to calcualte per line... 

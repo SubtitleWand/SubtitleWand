@@ -31,6 +31,17 @@ class SaveImageEvent extends HomePageEvent {
   List<Object> get props => [DateTime.now(), folder];
 }
 
+class SaveVideoEvent extends HomePageEvent {
+  final SubtitlePainter painter;
+  final String folder;
+  SaveVideoEvent({
+    @required this.painter,
+    this.folder // not yet supported to select folder
+  });
+  @override
+  List<Object> get props => [DateTime.now(), folder];
+}
+
 class NextFrameEvent extends HomePageEvent {
   @override
   List<Object> get props => [DateTime.now()];
@@ -184,6 +195,63 @@ class PropertySubtitleTextEvent extends HomePageEvent {
   List<Object> get props => [text];
 }
 
+class PropertySrtEvent extends HomePageEvent {
+  final String srtPath;
+  PropertySrtEvent(this.srtPath);
+  @override
+  List<Object> get props => [srtPath];
+}
+
+
+enum PropertyTextType {
+  plain,
+  srt,
+}
+
+class PropertyText extends Equatable {
+  final PropertyTextType type;
+  final List<TimeText> texts;
+  
+  PropertyText({
+    this.type,
+    this.texts,
+  });
+
+  @override
+  List<Object> get props => [type, texts];
+
+  PropertyText copyWith({
+    PropertyTextType type,
+    List<TimeText> texts,
+  }) {
+    return PropertyText(
+      type: type ?? this.type,
+      texts: texts ?? this.texts,
+    );
+  }
+}
+
+class TimeText extends Equatable{
+  final String text;
+  final DateTime startTimestamp;
+  final DateTime endTimeStamp;
+
+  TimeText({
+    this.text,
+    this.startTimestamp,
+    this.endTimeStamp,
+  });
+
+  @override
+  List<Object> get props => [text, startTimestamp, endTimeStamp];
+}
+
+class NoException implements Exception {}
+
+class NotDetectFFmpegException implements Exception {}
+
+class SrtFormatErrorException implements Exception {}
+
 class HomePageState extends Equatable {
   final int propertyPaddingLeft;
   final int propertyPaddingRight;
@@ -204,11 +272,12 @@ class HomePageState extends Equatable {
   final int propertyCanvasResolutionX;
   final int propertyCanvasResolutionY;
   final Color propertyCanvasBackgroundColor;
-  final List<String> propertySubtitleTexts;
+  final PropertyText propertyText;
   final int currentFrame;
 
   final FormzStatus status;
   final String openDir;
+  final Exception exception;
 
   HomePageState({
     @required this.propertyPaddingLeft,
@@ -230,10 +299,11 @@ class HomePageState extends Equatable {
     @required this.propertyCanvasResolutionX,
     @required this.propertyCanvasResolutionY,
     @required this.propertyCanvasBackgroundColor,
-    @required this.propertySubtitleTexts,
+    @required this.propertyText,
     @required this.currentFrame,
     @required this.status,
-    @required this.openDir
+    @required this.openDir,
+    @required this.exception
   });
 
   @override
@@ -257,10 +327,11 @@ class HomePageState extends Equatable {
     propertyCanvasResolutionX,
     propertyCanvasResolutionY,
     propertyCanvasBackgroundColor,
-    propertySubtitleTexts,
+    propertyText,
     currentFrame,
     status,
-    openDir
+    openDir,
+    exception
   ];
 
   
@@ -285,10 +356,11 @@ class HomePageState extends Equatable {
     int propertyCanvasResolutionX,
     int propertyCanvasResolutionY,
     Color propertyCanvasBackgroundColor,
-    List<String> propertySubtitleTexts,
+    PropertyText propertyText,
     int currentFrame,
     FormzStatus status,
     String openDir,
+    Exception exception,
   }) {
     return HomePageState(
       propertyPaddingLeft: propertyPaddingLeft ?? this.propertyPaddingLeft,
@@ -310,10 +382,11 @@ class HomePageState extends Equatable {
       propertyCanvasResolutionX: propertyCanvasResolutionX ?? this.propertyCanvasResolutionX,
       propertyCanvasResolutionY: propertyCanvasResolutionY ?? this.propertyCanvasResolutionY,
       propertyCanvasBackgroundColor: propertyCanvasBackgroundColor ?? this.propertyCanvasBackgroundColor,
-      propertySubtitleTexts: propertySubtitleTexts ?? this.propertySubtitleTexts,
+      propertyText: propertyText ?? this.propertyText,
       currentFrame: currentFrame ?? this.currentFrame,
       status: status ?? this.status,
       openDir: openDir ?? this.openDir,
+      exception: exception ?? this.exception
     );
   }
 }
@@ -345,10 +418,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
           propertyCanvasResolutionY: 1080,
           // propertyCanvasBackgroundColor: ColorPalette.secondaryColor,
           propertyCanvasBackgroundColor: Color(0xff253643),
-          propertySubtitleTexts: [],
+          propertyText: PropertyText(texts: [], type: PropertyTextType.plain),
           currentFrame: 0,
           status: FormzStatus.pure,
-          openDir: ''
+          openDir: '',
+          exception: NoException()
         )
       );
 
@@ -356,6 +430,8 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
     if(event is SaveImageEvent) {
       yield* _mapSaveImageEventToState(event);
+    } else if(event is SaveVideoEvent) {
+      yield* _mapSaveVideoEventToState(event);
     } else if(event is NextFrameEvent) {
       yield* _mapNextFrameEventToState(event);
     } else if(event is PreviousFrameEvent) {
@@ -400,20 +476,37 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       yield* _mapPropertyCanvasColorEventToState(event);
     } else if(event is PropertySubtitleTextEvent) {
       yield* _mapPropertySubtitleTextEventToState(event);
+    } else if(event is PropertySrtEvent) {
+      yield* _mapPropertySrtEventToState(event);
     }
   }
 
-  Stream<HomePageState> _mapSaveImageEventToState(SaveImageEvent event) async* {
+  Stream<HomePageState> _mapSaveImageEventToState(SaveImageEvent event, {bool isOpenDir = true, bool isRenderTransparent = false}) async* {
     final currentState = state;
     Size resolution = Size(currentState.propertyCanvasResolutionX.toDouble(), currentState.propertyCanvasResolutionY.toDouble());
-    for(int i = 0; i < currentState.propertySubtitleTexts.length; i++) {
+
+    if(isRenderTransparent) {
+      event.painter.update(
+        span: TextSpan(
+          text: '',
+          style: TextStyle(
+            fontFamily: state.propertyFontFamily,
+            color: state.propertyFontColor,
+            fontSize: state.propertyFontSize.toDouble(),
+          ),
+        ),
+      );
+      await event.painter.saveImage(resolution, resolution, event.folder ?? 'results', 'transparent');
+    }
+
+    for(int i = 0; i < currentState.propertyText.texts.length; i++) {
       yield currentState.copyWith(
         currentFrame: i,
         status: FormzStatus.submissionInProgress
       );
       event.painter.update(
         span: TextSpan(
-          text: '${state.propertySubtitleTexts[i]}',
+          text: '${state.propertyText.texts[i].text}',
           style: TextStyle(
             fontFamily: state.propertyFontFamily,
             color: state.propertyFontColor,
@@ -424,25 +517,101 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       await event.painter.saveImage(resolution, resolution, event.folder ?? 'results', 'image_$i');
     }
 
+    if(isOpenDir) {
+      if(Platform.isMacOS) {
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        String path = p.join(appDocDir.path, 'results');
+        yield state.copyWith(
+          status: FormzStatus.submissionSuccess,
+          openDir: path
+        );
+      } else {
+        yield state.copyWith(
+          status: FormzStatus.submissionSuccess,
+          openDir: event.folder ?? 'results'
+        );
+      }
+      yield state.copyWith(openDir: '', status: FormzStatus.pure);
+    }
+  }
+
+  Stream<HomePageState> _mapSaveVideoEventToState(SaveVideoEvent event) async* {
+    final currentState = state;
+    yield* _mapSaveImageEventToState(SaveImageEvent(painter: event.painter, folder: event.folder), isOpenDir: false, isRenderTransparent: true);
+
+    if(currentState.propertyText.texts[0].startTimestamp == null || currentState.propertyText.texts[0].endTimeStamp == null) return;
+
+    // generate video.ffconcat
+    String path = '';
+    if(Platform.isMacOS) {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      path = p.join(appDocDir.path, event.folder ?? 'results');
+    } else {
+      path = p.join(event.folder ?? 'results');
+    }
+    File ffmpegFile = File(p.join(path, 'video.ffconcat'));
+
+    await ffmpegFile.create();
+
+    String result = 'ffconcat version 1.0\n';
+    double different = 0.5;
+    for(int i = 0; i < currentState.propertyText.texts.length; i++) {
+      if(i == 0) {
+        result += 'file transparent.png\n';
+        result += 'duration ${(currentState.propertyText.texts[i].startTimestamp.millisecond)/1000}\n';
+      }
+      result += 'file image_${i}.png\n';
+      if(i + 1 < currentState.propertyText.texts.length) {
+        if((currentState.propertyText.texts[i + 1].startTimestamp.difference(currentState.propertyText.texts[i].endTimeStamp).inMilliseconds / 1000.0) < different) {
+          result += 'duration ${(currentState.propertyText.texts[i + 1].startTimestamp.difference(currentState.propertyText.texts[i].startTimestamp)).inMilliseconds / 1000.0}\n';
+        } else {
+          result += 'duration ${(currentState.propertyText.texts[i].endTimeStamp.difference(currentState.propertyText.texts[i].startTimestamp).inMilliseconds /1000.0)}\n';
+          result += 'file transparent.png\n';
+          result += 'duration ${(currentState.propertyText.texts[i + 1].startTimestamp.difference(currentState.propertyText.texts[i].endTimeStamp)).inMilliseconds / 1000.0}\n';
+        }
+      } else {
+        result += 'duration ${(currentState.propertyText.texts[i].endTimeStamp.difference(currentState.propertyText.texts[i].startTimestamp).inMilliseconds /1000.0)}\n';
+      }
+
+      if(i == currentState.propertyText.texts.length - 1) {
+        result += 'duration ${(currentState.propertyText.texts[i].endTimeStamp.difference(currentState.propertyText.texts[i].startTimestamp).inMilliseconds /1000.0)}\n';
+        result += 'file transparent.png\n';
+        result += 'duration 4\n';
+      }
+    }
+
+    await ffmpegFile.writeAsString(result);
+
+    //ffmpeg -i video.ffconcat -crf 25 -vf fps=60 out.mp4
+    ProcessResult ffmpegResult = await Process.run(
+      'ffmpeg', 
+      ['-y', '-i','video.ffconcat', '-crf', '25', '-vf', 'fps=60', 'out.mp4'], 
+      runInShell: true,
+      workingDirectory: path
+    );
+
+    if(ffmpegResult.stderr) unawaited(LoggerUtil.getInstance().logError(ffmpegResult.stderr, isWriteToJournal: true));
+    if(ffmpegResult.stdout) unawaited(LoggerUtil.getInstance().log(ffmpegResult.stdout));
+
     if(Platform.isMacOS) {
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String path = p.join(appDocDir.path, 'results');
-      yield state.copyWith(
+      yield currentState.copyWith(
         status: FormzStatus.submissionSuccess,
         openDir: path
       );
     } else {
-      yield state.copyWith(
+      yield currentState.copyWith(
         status: FormzStatus.submissionSuccess,
         openDir: event.folder ?? 'results'
       );
     }
-    yield state.copyWith(openDir: '');
+    yield currentState.copyWith(openDir: '', status: FormzStatus.pure);
   }
   
   Stream<HomePageState> _mapNextFrameEventToState(NextFrameEvent event) async* {
     final currentState = state;
-    int maxLength = currentState.propertySubtitleTexts.length;
+    int maxLength = currentState.propertyText.texts.length;
     yield state.copyWith(
       status: FormzStatus.pure,
       currentFrame: Math.max(0, Math.min(currentState.currentFrame + 1, maxLength - 1))
@@ -593,19 +762,78 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       propertyCanvasBackgroundColor: event.color
     );
   }
+
   Stream<HomePageState> _mapPropertySubtitleTextEventToState(PropertySubtitleTextEvent event) async* {
     final currentState = state;
     if(event.text.isEmpty)  {
       yield currentState.copyWith(
         status: FormzStatus.pure,
-        propertySubtitleTexts: []
+        propertyText: currentState.propertyText.copyWith(type: PropertyTextType.plain, texts: [])
       );
       return;
     }
     yield currentState.copyWith(
       status: FormzStatus.pure,
-      propertySubtitleTexts: event.text.split('\n')
+      propertyText: currentState.propertyText.copyWith(
+        type: PropertyTextType.plain,
+        texts: event.text.split('\n').map(
+          (e) => TimeText(
+            text: e,
+            startTimestamp: null,
+            endTimeStamp: null,
+          )
+        ).toList()
+      )
     );
   }
 
+  Stream<HomePageState> _mapPropertySrtEventToState(PropertySrtEvent event) async* {
+    final currentState = state;
+
+    DateTime Function(String text) transformToDate = (text) {
+      List<String> srtTimeRaw = text.split(',');
+      List<int> srtTimeTimeRaw = srtTimeRaw[0].split(':').map((e) => int.parse(e)).toList();
+      int srtTimeMillesRaw = int.parse(srtTimeRaw[1]);
+      int srtTimestamp = (srtTimeTimeRaw[0] * 3600 + srtTimeTimeRaw[1] * 60 + srtTimeTimeRaw[2]) * 1000 + srtTimeMillesRaw;
+      return DateTime.fromMillisecondsSinceEpoch(srtTimestamp);
+    };
+    List<TimeText> texts = [];
+
+    try {
+      File file = File(event.srtPath);
+
+      if(await file.exists()) {
+        final String srtContent = await file.readAsString();
+        final RegExp reg = RegExp(r'(?<order>\d+)\n(?<start>[\d:,]+)\s+-{2}\>\s+(?<end>[\d:,]+)\n(?<text>[\s\S]*?(?=\n{2}|$))', caseSensitive: false, multiLine: true);
+        final matches = reg.allMatches(srtContent.replaceAll('\r', ''));
+        for(final match in matches) {
+          final _ = int.parse(match.namedGroup('order'));
+          final startTime = transformToDate(match.namedGroup('start'));
+          final endTime = transformToDate(match.namedGroup('end'));
+          final text = match.namedGroup('text');
+
+          texts.add(
+            TimeText(
+              text: text,
+              startTimestamp: startTime,
+              endTimeStamp: endTime
+            )
+          );
+        }
+      }
+    } catch(err) {
+      yield currentState.copyWith(
+        status: FormzStatus.submissionFailure,
+        exception: SrtFormatErrorException()
+      );
+    }
+
+    yield currentState.copyWith(
+      status: FormzStatus.pure,
+      propertyText: currentState.propertyText.copyWith(
+        type: PropertyTextType.srt,
+        texts: texts
+      )
+    );
+  }
 }

@@ -29,7 +29,7 @@ class ColorPickerDialog extends StatefulWidget {
 
 class ColorPickerDialogState extends State<ColorPickerDialog> {
   Color pickerColor = Color(0xff000000);
-  // Color currentColor = Color(0xff000000);
+  
   @override
   void initState() {
     super.initState();

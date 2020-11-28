@@ -15,10 +15,28 @@ class AttributePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return AttributePanelBase(
+      key: key,
+      children: children,
+      titleWidget: Text('$title', style: Theme.of(context).textTheme.subtitle1,),
+    );
+  }
+}
+
+class AttributePanelBase extends StatelessWidget {
+  final Widget titleWidget;
+  final List<Widget> children;
+  const AttributePanelBase({
+    Key key,
+    this.titleWidget,
+    this.children
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        //color: ColorPalette.secondaryColor,
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -36,7 +54,7 @@ class AttributePanel extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text('$title', style: Theme.of(context).textTheme.subtitle1,),
+              child: titleWidget,
             )
           )
         ),
@@ -87,7 +105,6 @@ class AttributeBase extends StatelessWidget {
           Container(
             width: childWidth,
             height: 24,
-            //color: Colors.black, //ColorPalette.accentColor,
             decoration: BoxDecoration(
               color: Colors.black87,
               borderRadius: BorderRadius.circular(8),
@@ -108,12 +125,14 @@ class TextAttribute extends StatelessWidget {
   final String initValue;
   // final bool isNegative = false;
   final AttributeFormFieldType type;
+  final bool readOnly;
   const TextAttribute({
     Key key,
     this.title = 'Untitled',
     this.titleWidth = 48,
     this.controller,
     this.initValue,
+    this.readOnly = false,
     this.type = AttributeFormFieldType.digit,
   }) : super(key: key);
 
@@ -126,6 +145,7 @@ class TextAttribute extends StatelessWidget {
         controller: controller,
         initialValue: initValue,
         type: type,
+        readOnly: readOnly,
       ),
     );
   }

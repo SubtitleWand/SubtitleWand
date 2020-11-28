@@ -19,17 +19,21 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'
     show describeEnum;
 import 'package:flutter/material.dart' hide Image;
-import 'package:flutter/services.dart' show LogicalKeyboardKey, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
+import 'package:flutter/services.dart' show LogicalKeyboardKey, PlatformException, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/components/project/attribute_form_field.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/attribute.dart';
+import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
+import 'package:subtitle_wand/utilities/logger_util.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -51,7 +55,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   // FrameControlWidget minimal and expand
   bool isMinimizeFrameControl = false;
-  AnimationController _frameButtonController;
+  // AnimationController _frameButtonController;
 
   // Properties
   // Properties - padding
@@ -70,14 +74,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   TextEditingController _blurTextCon;
   // Properties - Aligment
   //ignore: unused_field
-  final SubtitleVerticalAlignment _verticleAlignment = SubtitleVerticalAlignment.Bottom;
+  // final SubtitleVerticalAlignment _verticleAlignment = SubtitleVerticalAlignment.Bottom;
   //ignore: unused_field
-  final SubtitleHorizontalAlignment _horizontalAlignment = SubtitleHorizontalAlignment.Center;
+  // final SubtitleHorizontalAlignment _horizontalAlignment = SubtitleHorizontalAlignment.Center;
   // Properties - Canvas
   TextEditingController _canvasResolutionXTextCon;
   TextEditingController _canvasResolutionYTextCon;
   // Properties - Text
   TextEditingController _subtilteTextController;
+
+  SubtitlePanelMoveController _subtitlePanelMoveController;
+  SubtitlePanelScrollController _subtitlePanelScrollController;
 
   Widget frameControlButton(BuildContext context, {
     bool isMinimize,
@@ -129,15 +136,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void initState() { 
     super.initState();
     _bloc = MPB.HomePageBloc();
-    _painter = SubtitlePainter();
 
+    _subtitlePanelMoveController = SubtitlePanelMoveController(Offset.zero);
+    _subtitlePanelScrollController = SubtitlePanelScrollController(0);
+    _painter = SubtitlePainter();
     _painter.update(canvasBackgroundColor: _bloc.state.propertyCanvasBackgroundColor);
 
-    // Controll Frame Button (Animation/Minimization)
-    _frameButtonController = AnimationController(
-      vsync: this, // the SingleTickerProviderStateMixin
-      duration: const Duration(milliseconds: 500),
-    );
     f1Color = f2Color = defaultKey;
     RawKeyboard.instance.addListener((e){
       if(_bloc.state.status.isSubmissionInProgress) return;
@@ -234,17 +238,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               if(state.status.isSubmissionSuccess && state.openDir.isNotEmpty) {
                 final path = state.openDir;
                 if(Platform.isWindows) {
-                  Process.runSync('explorer', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  final result = Process.runSync('explorer', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 } else if(Platform.isLinux) {
-                  Process.runSync('nautilus', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  final result = Process.runSync('nautilus', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 } else if(Platform.isMacOS) {
-                  Process.runSync('open', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  final result = Process.runSync('open', [path], runInShell: true, workingDirectory: Directory.current.path);
+                  if(result.stderr) LoggerUtil.getInstance().logError(result.stderr, isWriteToJournal: true);
                 }
               }
-              // TextAlign align = TextAlign.center;
-              // if(state.horizontalAlignment == SubtitleHorizontalAlignment.Left) align = TextAlign.left;
-              // if(state.horizontalAlignment == SubtitleHorizontalAlignment.Right) align = TextAlign.right;
-              // print("spreadRadius: ${state.propertyShadowSpread}");
+
               _painter.update(
                 shadows: [
                   BoxShadow( // bottomLeft
@@ -269,21 +273,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 subtitleAlignment: state.verticalAlignment,
                 canvasBackgroundColor: state.propertyCanvasBackgroundColor,
               );
-              print(state.propertyCanvasBackgroundColor);
               setState(() {});
             },
             child: BlocBuilder<MPB.HomePageBloc, MPB.HomePageState>(
               cubit: _bloc,
-              // buildWhen: (prev, state) {
-              //   // bool isPrevIdleState = prev is MPB.IdleState;
-              //   // bool isPrevSavingState = prev is MPB.SavingState;
-              //   // bool isIdleState = prev is MPB.IdleState;
-              //   // bool isSavingState = state is MPB.SavingState;
-              //   // return !(isSavingState && isPrevSavingState);
-              //   // return !(state.status.isSubmissionInProgress);
-              // },
               builder: (context, state) {
-                // bool isSavingState = state is MPB.SavingState;
                 bool isSavingState = state.status.isSubmissionInProgress;
                 return AbsorbPointer(
                   absorbing: isSavingState,
@@ -291,126 +285,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     colorFilter: ColorFilter.mode(Colors.grey, isSavingState ? BlendMode.saturation : BlendMode.dst),
                     child: Column(
                       children: <Widget>[
-                        Container(
-                          color: ColorPalette.primaryColor,
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          height: 64,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Subtitle wand', style: Theme.of(context).textTheme.headline6,),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  FlatButton.icon(
-                                    color: ColorPalette.secondaryColor,
-                                    textColor: ColorPalette.fontColor,
-                                    disabledColor: ColorPalette.accentColor,
-                                    icon: Icon(Icons.save_alt),
-                                    label: Text('Save Image'),
-                                    onPressed: state.propertySubtitleTexts.isNotEmpty ? () async {
-                                      // String path = await FilePicker.getFilePath();
-                                      // if(path == null || path.isEmpty) return;
-                                      // print("path: $path");
-                                      // _bloc.add(MPB.SaveImageEvent(painter: _painter, folder: path));
-                                      _bloc.add(MPB.SaveImageEvent(painter: _painter));
-                                    } : null,
-                                  )
-                                ],
-                              )
-                            ]
-                          ),
-                        ),
+                        _header(state),
                         Divider(height: 1, thickness: 1, color: ColorPalette.primaryColor.withGreen(80),),
                         Expanded(
                           child: Row(
                             children: [
                               // SubtitleFrame Section
                               Expanded(
-                                child: Container(
-                                  color: Colors.green,
-                                  child: ClipRect(
-                                    child: Stack(
-                                      children: <Widget>[
-                                        // Subtitle Panel
-                                        Container(
-                                          color: Colors.black,
-                                          width: double.maxFinite,
-                                          height: double.maxFinite,
-                                          child: Container(
-                                            color: Colors.black,
-                                            child: MouseRegion(
-                                              onEnter: (m) {
-                                                _frameButtonController.forward();
-                                                setState(() {
-                                                  isMinimizeFrameControl = true;
-                                                });
-                                              },
-                                              onExit: (m) {
-                                                _frameButtonController.reverse();
-                                                setState(() {
-                                                  isMinimizeFrameControl = false;
-                                                });
-                                              },
-                                              child: SubtitlePanel(
-                                                painter: _painter, 
-                                                canvasResolution: Size(state.propertyCanvasResolutionX.toDouble(), state.propertyCanvasResolutionY.toDouble()),
-                                                span: TextSpan(
-                                                  text: "${state.propertySubtitleTexts.isNotEmpty ? state.propertySubtitleTexts[state.currentFrame] : ""}",
-                                                  style: TextStyle(
-                                                    fontFamily: state.propertyFontFamily,
-                                                    color: state.propertyFontColor,
-                                                    fontSize: state.propertyFontSize.toDouble(),
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          ),
-                                        ),
-                                        // Frame Panel
-                                        Positioned(
-                                          //textDirection: TextDirection.ltr,
-                                          bottom: 0,
-                                          left: 0,
-                                          right: 0,
-                                          child: Container(
-                                            //duration: const Duration(milliseconds: 500),
-                                            // height: isMinimizeFrameControl ? 64 : 128,
-                                            //width: double.maxFinite,
-                                            // padding: isMinimizeFrameControl ? EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0): EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
-                                            height: 64,
-                                            padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
-                                            decoration: BoxDecoration(
-                                              color: ColorPalette.accentColor.withOpacity(0.4),
-                                              borderRadius: BorderRadius.circular(4)
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: <Widget>[
-                                                frameControlButton(
-                                                  context,
-                                                  isMinimize: true, // isMinimizeFrameControl,
-                                                  dynamicButtonColor: f1Color,
-                                                  title: '(F1)\nPrevious Frame',
-                                                  iconData: Icons.keyboard_arrow_left,
-                                                  onTap: (){ _bloc.add(MPB.PreviousFrameEvent()); }
-                                                ),
-                                                frameControlButton(
-                                                  context,
-                                                  isMinimize: true, // isMinimizeFrameControl,
-                                                  dynamicButtonColor: f2Color,
-                                                  iconData: Icons.keyboard_arrow_right,
-                                                  title: '(F2)\nNext Frame',
-                                                  onTap: (){ _bloc.add(MPB.NextFrameEvent()); }
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ),
+                                child: _canvasPanel(state)
                               ),
                               VerticalDivider(
                                 width: 1,
@@ -418,268 +300,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                 color: ColorPalette.primaryColor,
                               ),
                               // Properties Section
-                              Container(
-                                width: 240,
-                                color: ColorPalette.primaryColor,
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(accentColor: ColorPalette.fontColor, unselectedWidgetColor:  ColorPalette.fontColor..withOpacity(0.8)),
-                                  child: ListView(
-                                    padding: EdgeInsets.symmetric(horizontal: 8),
-                                    children: <Widget>[
-                                      SizedBox(height: 16,),
-                                      Text('Properites:', style: Theme.of(context).textTheme.headline6,),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Padding',
-                                        children: [
-                                          TextAttribute(
-                                            title: 'Left',
-                                            controller: _paddingLeftTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          TextAttribute(
-                                            title: 'Right',
-                                            controller: _paddingRightTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          TextAttribute(
-                                            title: 'Top',
-                                            controller: _paddingTopTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          TextAttribute(
-                                            title: 'Bottom',
-                                            controller: _paddingBottomTextCon,
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Font',
-                                        children: [
-                                          TextAttribute(
-                                            title: 'Size',
-                                            controller: _fontSizeTextCon,
-                                          ),
-                                          SizedBox(height: 8,),
-                                          ColorAttribute(
-                                            title: 'Color',
-                                            onSelected: (color) => _bloc.add(MPB.PropertyFontColorEvent(color)),
-                                            color: state.propertyFontColor
-                                          ),
-                                          SizedBox(height: 12,),
-                                          ButtonAttribute(
-                                            childWidth: null,
-                                            title: 'TTF',
-                                            buttonName: 'Choose a file',
-                                            onPressed: () async {
-                                              File file = await FilePicker.getFile(type: FileType.CUSTOM, fileExtension: 'ttf');
-                                              if(file == null) return;
-                                              _bloc.add(MPB.PropertyFontTtfEvent(file.path));
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Border',
-                                        children: [
-                                          TextAttribute(
-                                            title: 'Width',
-                                            controller: _borderWidthTextCon,
-                                          ),
-                                          SizedBox(height: 12,),
-                                          ColorAttribute(
-                                            title: 'Color',
-                                            onSelected: (color) => _bloc.add(MPB.PropertyBorderColorEvent(color)),
-                                            color: state.propertyBorderColor,
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Shadow',
-                                        children: [
-                                          TextAttribute(
-                                            title: 'OffsetX',
-                                            titleWidth: 64,
-                                            type: AttributeFormFieldType.integer,
-                                            controller: _offsetXTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          TextAttribute(
-                                            title: 'OffsetY',
-                                            titleWidth: 64,
-                                            type: AttributeFormFieldType.integer,
-                                            controller: _offsetYTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          TextAttribute(
-                                            title: 'Blur',
-                                            titleWidth: 64,
-                                            controller: _blurTextCon,
-                                          ),
-                                          SizedBox(height: 4,),
-                                          ColorAttribute(
-                                            title: 'Color',
-                                            onSelected: (color) => _bloc.add(MPB.PropertyShadowColorEvent(color)),
-                                            color: state.propertyShadowColor,
-                                            titleWidth: 64,
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Alignment',
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 24),
-                                            child: Text('Horizontal Alignment'),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 16),
-                                            child: SelectorAttribute(
-                                              selectionA: 'Left',
-                                              selectionB: 'Center',
-                                              selectionC: 'Right',
-                                              selected: describeEnum(state.horizontalAlignment),
-                                              onSelect: (selected) {
-                                                SubtitleHorizontalAlignment.values.forEach(
-                                                  (alignment){
-                                                    if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
-                                                      _bloc.add(MPB.PropertyAlignmentHorizontalEvent(alignment));
-                                                    }
-                                                  }
-                                                );
-                                                return;
-                                              },
-                                            )
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 24),
-                                            child: Text('Vertical Alignment'),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 16),
-                                            child: SelectorAttribute(
-                                              selectionA: 'Top',
-                                              selectionB: 'Center',
-                                              selectionC: 'Bottom',
-                                              selected: describeEnum(state.verticalAlignment),
-                                              onSelect: (selected) {
-                                                SubtitleVerticalAlignment.values.forEach(
-                                                  (alignment){
-                                                    if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
-                                                      _bloc.add(MPB.PropertyAlignmentVerticalEvent(alignment));
-                                                    }
-                                                  }
-                                                );
-                                                return;
-                                              },
-                                            )
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Canvas',
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 24),
-                                            child: Text('Resolution'),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 16),
-                                            child: TextAttribute(
-                                              title: 'X',
-                                              controller: _canvasResolutionXTextCon
-                                            ),
-                                          ),
-                                          SizedBox(height: 4,),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 16),
-                                            child: TextAttribute(
-                                              title: 'Y',
-                                              controller: _canvasResolutionYTextCon
-                                            ),
-                                          ),
-                                          SizedBox(height: 16,),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 24),
-                                            child: Text('Background'),
-                                          ),
-                                          SizedBox(height: 8,),
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 16),
-                                            child: ColorAttribute(
-                                              title: 'Color',
-                                              onSelected: (color) => _bloc.add(MPB.PropertyCanvasColorEvent(color)),
-                                              color: state.propertyCanvasBackgroundColor
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(height: 8,),
-                                      AttributePanel(
-                                        title: 'Text',
-                                        children: [
-                                          Container(
-                                            constraints: BoxConstraints(
-                                              minHeight: 120,
-                                              maxHeight: 480,
-                                            ),
-                                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                            decoration: BoxDecoration(
-                                              color: ColorPalette.fontColor
-                                            ),
-                                            child: Scrollbar(
-                                              child: TextFormField(
-                                                controller: _subtilteTextController,
-                                                keyboardType: TextInputType.multiline,
-                                                decoration: InputDecoration.collapsed(hintText: null),
-                                                style: TextStyle(color: ColorPalette.primaryColor),
-                                                maxLines: null,
-                                              )
-                                            )
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                )
-                              )
+                              _attributePanel(state)
                             ]
                           ),
                         ),
                         Divider(height: 1, thickness: 1, color:  ColorPalette.secondaryColor),
-                        Container(
-                          height: 48,
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          color: ColorPalette.primaryColor,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text('Version: 0.0.1',),
-                              isSavingState ?
-                              Container(
-                                width: 160,
-                                child: BlocBuilder<MPB.HomePageBloc, MPB.HomePageState>(
-                                  cubit: _bloc,
-                                  builder: (context, lpState) {
-                                    return LinearProgressIndicator(
-                                      backgroundColor: ColorPalette.secondaryColor,
-                                      valueColor: AlwaysStoppedAnimation<Color>(ColorPalette.accentColor),
-                                      value: lpState.currentFrame / ((lpState.propertySubtitleTexts.length - 1) <= 0 ? 1 : (lpState.propertySubtitleTexts.length - 1)),
-                                    );
-                                  },
-                                )
-                              )
-                              :
-                              Container()
-                            ],
-                          ),
-                        )
+                        _footer(state)
                       ],
                     )
                   )
@@ -687,6 +313,428 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               },
             ),
           )
+        ),
+      )
+    );
+  }
+
+  Widget _footer(MPB.HomePageState state) {
+    bool isSavingState = state.status.isSubmissionInProgress;
+    return Container(
+      height: 48,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      color: ColorPalette.primaryColor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text('Version: 0.0.1',),
+          isSavingState ?
+          Container(
+            width: 160,
+            child: BlocBuilder<MPB.HomePageBloc, MPB.HomePageState>(
+              cubit: _bloc,
+              builder: (context, lpState) {
+                return LinearProgressIndicator(
+                  backgroundColor: ColorPalette.secondaryColor,
+                  valueColor: AlwaysStoppedAnimation<Color>(ColorPalette.accentColor),
+                  value: lpState.currentFrame / ((lpState.propertyText.texts.length - 1) <= 0 ? 1 : (lpState.propertyText.texts.length - 1)),
+                );
+              },
+            )
+          )
+          :
+          Container()
+        ],
+      ),
+    );
+  }
+
+  Widget _header(MPB.HomePageState state) {
+    return Container(
+      color: ColorPalette.primaryColor,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      height: 64,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Subtitle wand', style: Theme.of(context).textTheme.headline6,),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              FlatButton.icon(
+                color: ColorPalette.secondaryColor,
+                textColor: ColorPalette.fontColor,
+                disabledColor: ColorPalette.accentColor,
+                icon: Icon(Icons.save_alt),
+                label: Text('Save Video'),
+                onPressed: (state.propertyText.type == MPB.PropertyTextType.srt && state.propertyText.texts.isNotEmpty) ? () async {
+                  _bloc.add(MPB.SaveVideoEvent(painter: _painter));
+                } : null,
+              ),
+              SizedBox(width: 8,),
+              FlatButton.icon(
+                color: ColorPalette.secondaryColor,
+                textColor: ColorPalette.fontColor,
+                disabledColor: ColorPalette.accentColor,
+                icon: Icon(Icons.save_alt),
+                label: Text('Save Image'),
+                onPressed: (state.propertyText.type == MPB.PropertyTextType.plain && state.propertyText.texts.isNotEmpty) ? () async {
+                  _bloc.add(MPB.SaveImageEvent(painter: _painter));
+                } : null,
+              )
+            ],
+          )
+        ]
+      ),
+    );
+  }
+
+  Widget _canvasPanel(MPB.HomePageState state) {
+    return Container(
+      color: Colors.green,
+      child: ClipRect(
+        child: Column(
+          children: <Widget>[
+            // Subtitle Panel
+            Expanded(
+              child: Container(
+                color: Colors.black,
+                width: double.maxFinite,
+                height: double.maxFinite,
+                child: Container(
+                  color: Colors.black,
+                  child: SubtitlePanel(
+                    painter: _painter, 
+                    pmoveController: _subtitlePanelMoveController,
+                    pscrollController: _subtitlePanelScrollController,
+                    canvasResolution: Size(state.propertyCanvasResolutionX.toDouble(), state.propertyCanvasResolutionY.toDouble()),
+                    span: TextSpan(
+                      text: '${state.propertyText.texts.isNotEmpty ? state.propertyText.texts[state.currentFrame].text : ''}',
+                      style: TextStyle(
+                        fontFamily: state.propertyFontFamily,
+                        color: state.propertyFontColor,
+                        fontSize: state.propertyFontSize.toDouble(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Frame Panel
+            Container(
+              height: 48,
+              padding: EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
+              decoration: BoxDecoration(
+                color: ColorPalette.accentColor,
+                borderRadius: BorderRadius.circular(4)
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Tooltip(
+                    message: 'Previous Frame(F1)',
+                    child: IconButton( 
+                      onPressed: () { _bloc.add(MPB.PreviousFrameEvent()); }, 
+                      color: f1Color,
+                      icon: Icon(
+                        Icons.skip_previous_outlined,
+                      ),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Next Frame(F2)',
+                    child: IconButton( 
+                      onPressed: () { _bloc.add(MPB.NextFrameEvent()); }, 
+                      color: f2Color,
+                      icon: Icon(
+                        Icons.skip_next_outlined,
+                      ),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Reset Position',
+                    child: IconButton( 
+                      onPressed: () { _subtitlePanelMoveController.value = Offset.zero; }, 
+                      icon: Icon(Icons.control_camera_outlined),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Reset Scale',
+                    child: IconButton( 
+                      onPressed: () { _subtitlePanelScrollController.value = 0; }, 
+                      icon: Icon(Icons.aspect_ratio_outlined),
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget _attributePanel(MPB.HomePageState state) {
+    return Container(
+      width: 240,
+      color: ColorPalette.primaryColor,
+      child: Theme(
+        data: Theme.of(context).copyWith(accentColor: ColorPalette.fontColor, unselectedWidgetColor:  ColorPalette.fontColor..withOpacity(0.8)),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          children: <Widget>[
+            SizedBox(height: 16,),
+            Text('Properites:', style: Theme.of(context).textTheme.headline6,),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Padding',
+              children: [
+                TextAttribute(
+                  title: 'Left',
+                  controller: _paddingLeftTextCon,
+                ),
+                SizedBox(height: 4,),
+                TextAttribute(
+                  title: 'Right',
+                  controller: _paddingRightTextCon,
+                ),
+                SizedBox(height: 4,),
+                TextAttribute(
+                  title: 'Top',
+                  controller: _paddingTopTextCon,
+                ),
+                SizedBox(height: 4,),
+                TextAttribute(
+                  title: 'Bottom',
+                  controller: _paddingBottomTextCon,
+                ),
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Font',
+              children: [
+                TextAttribute(
+                  title: 'Size',
+                  controller: _fontSizeTextCon,
+                ),
+                SizedBox(height: 8,),
+                ColorAttribute(
+                  title: 'Color',
+                  onSelected: (color) => _bloc.add(MPB.PropertyFontColorEvent(color)),
+                  color: state.propertyFontColor
+                ),
+                SizedBox(height: 12,),
+                ButtonAttribute(
+                  childWidth: null,
+                  title: 'TTF',
+                  buttonName: 'Choose a file',
+                  onPressed: () async {
+                    final fileResult = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['ttf']);
+                    if(fileResult == null) return;
+                    _bloc.add(MPB.PropertyFontTtfEvent(fileResult.path));
+                  },
+                )
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Border',
+              children: [
+                TextAttribute(
+                  title: 'Width',
+                  controller: _borderWidthTextCon,
+                ),
+                SizedBox(height: 12,),
+                ColorAttribute(
+                  title: 'Color',
+                  onSelected: (color) => _bloc.add(MPB.PropertyBorderColorEvent(color)),
+                  color: state.propertyBorderColor,
+                )
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Shadow',
+              children: [
+                TextAttribute(
+                  title: 'OffsetX',
+                  titleWidth: 64,
+                  type: AttributeFormFieldType.integer,
+                  controller: _offsetXTextCon,
+                ),
+                SizedBox(height: 4,),
+                TextAttribute(
+                  title: 'OffsetY',
+                  titleWidth: 64,
+                  type: AttributeFormFieldType.integer,
+                  controller: _offsetYTextCon,
+                ),
+                SizedBox(height: 4,),
+                TextAttribute(
+                  title: 'Blur',
+                  titleWidth: 64,
+                  controller: _blurTextCon,
+                ),
+                SizedBox(height: 4,),
+                ColorAttribute(
+                  title: 'Color',
+                  onSelected: (color) => _bloc.add(MPB.PropertyShadowColorEvent(color)),
+                  color: state.propertyShadowColor,
+                  titleWidth: 64,
+                )
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Alignment',
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 24),
+                  child: Text('Horizontal Alignment'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SelectorAttribute(
+                    selectionA: 'Left',
+                    selectionB: 'Center',
+                    selectionC: 'Right',
+                    selected: describeEnum(state.horizontalAlignment),
+                    onSelect: (selected) {
+                      SubtitleHorizontalAlignment.values.forEach(
+                        (alignment){
+                          if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
+                            _bloc.add(MPB.PropertyAlignmentHorizontalEvent(alignment));
+                          }
+                        }
+                      );
+                      return;
+                    },
+                  )
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 24),
+                  child: Text('Vertical Alignment'),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SelectorAttribute(
+                    selectionA: 'Top',
+                    selectionB: 'Center',
+                    selectionC: 'Bottom',
+                    selected: describeEnum(state.verticalAlignment),
+                    onSelect: (selected) {
+                      SubtitleVerticalAlignment.values.forEach(
+                        (alignment){
+                          if(selected.toLowerCase() == describeEnum(alignment).toLowerCase()) {
+                            _bloc.add(MPB.PropertyAlignmentVerticalEvent(alignment));
+                          }
+                        }
+                      );
+                      return;
+                    },
+                  )
+                ),
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Canvas',
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 24),
+                  child: Text('Resolution'),
+                ),
+                SizedBox(height: 8,),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: TextAttribute(
+                    title: 'X',
+                    controller: _canvasResolutionXTextCon
+                  ),
+                ),
+                SizedBox(height: 4,),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: TextAttribute(
+                    title: 'Y',
+                    controller: _canvasResolutionYTextCon
+                  ),
+                ),
+                SizedBox(height: 16,),
+                Padding(
+                  padding: EdgeInsets.only(left: 24),
+                  child: Text('Background'),
+                ),
+                SizedBox(height: 8,),
+                Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: ColorAttribute(
+                    title: 'Color',
+                    onSelected: (color) => _bloc.add(MPB.PropertyCanvasColorEvent(color)),
+                    color: state.propertyCanvasBackgroundColor
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 8,),
+            AttributePanel(
+              title: 'Text',
+              children: [
+                CupertinoSegmentedControl<MPB.PropertyTextType>(
+                  onValueChanged: (v) async {
+                    if(v == MPB.PropertyTextType.srt) {
+                      try {
+                        final fileResult = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['srt']);
+                        if(fileResult == null) return;
+                        _bloc.add(MPB.PropertySrtEvent(fileResult.path));
+                      } on PlatformException catch (e) {
+                        unawaited(LoggerUtil.getInstance().logError(e.toString(), isWriteToJournal: true));
+                      } catch (ex) {
+                        unawaited(LoggerUtil.getInstance().logError(ex, isWriteToJournal: true));
+                      }
+                    } else {
+                      _bloc.add(MPB.PropertySubtitleTextEvent(''));
+                    }
+                  },
+                  groupValue: state.propertyText.type,
+                  children: {
+                    MPB.PropertyTextType.plain: Padding(padding: EdgeInsets.all(4), child: Text('Plain'),),
+                    MPB.PropertyTextType.srt: Padding(padding: EdgeInsets.all(4), child: Text('SRT'),),
+                  },
+                ),
+                SizedBox(height: 16,),
+                state.propertyText.type == MPB.PropertyTextType.plain ?
+                  Container(
+                    constraints: BoxConstraints(
+                      minHeight: 120,
+                      maxHeight: 480,
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: ColorPalette.fontColor
+                    ),
+                    child: Scrollbar(
+                      child: TextFormField(
+                        controller: _subtilteTextController,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration.collapsed(hintText: null),
+                        style: TextStyle(color: ColorPalette.primaryColor),
+                        maxLines: null,
+                      )
+                    )
+                  )
+                :
+                  TextAttribute(
+                    title: 'SRT Lines',
+                    titleWidth: null,
+                    initValue: '${state.propertyText.texts.length}',
+                    readOnly: true,
+                  )
+              ],
+            ),
+            SizedBox(height: 16,),
+          ],
         ),
       )
     );

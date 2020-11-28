@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
+import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/utilities/logger_util.dart';
 
 /// Which way for Subtitle to align horizontally.
@@ -20,17 +21,9 @@ enum SubtitleHorizontalAlignment {
 
 /// Which way for Subtitle to align Vertically
 enum SubtitleVerticalAlignment {
-  // topLeft,
-  // topCenter,
-  // topRight,
-  // centerLeft,
   Top,
   Center,
   Bottom,
-  // centerRight,
-  // bottomLeft,
-  // bottomCenter,
-  // bottomRight,
 }
 
 ///
@@ -45,6 +38,11 @@ class SubtitlePanel extends StatefulWidget {
   final Size canvasResolution;
   /// The background color of canvas, will not be rendered in the canvas
   final Color canvasBackgroundColor;
+
+  final SubtitlePanelScrollController scrollController;
+
+  final SubtitlePanelMoveController moveController;
+
   /// Creates a Subtitle panel.
   ///
   /// The [painter] must not be null. 
@@ -55,6 +53,8 @@ class SubtitlePanel extends StatefulWidget {
     @required InlineSpan span,
     Size canvasResolution,
     Color canvasBackgroundColor,
+    SubtitlePanelMoveController pmoveController,
+    SubtitlePanelScrollController pscrollController
   }) 
     :  
       assert(painter != null && span != null),
@@ -62,6 +62,8 @@ class SubtitlePanel extends StatefulWidget {
       span = span,
       canvasResolution = canvasResolution ?? Size(1024, 768),
       canvasBackgroundColor = canvasBackgroundColor,
+      moveController = pmoveController ?? SubtitlePanelMoveController(Offset.zero),
+      scrollController = pscrollController ?? SubtitlePanelScrollController(0),
       super(key: key);
 
   @override
@@ -70,8 +72,6 @@ class SubtitlePanel extends StatefulWidget {
 
 class _SubtitlePanelState extends State<SubtitlePanel> {
   SubtitlePainter _painter;
-  ScrollController _scaleScroller;
-  Offset _translation = Offset(0, 0);
   bool isTapped = false;
 
   @override
@@ -79,8 +79,10 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
     super.initState();
     _painter = widget.painter;
     _painter.update(span: widget.span, canvasResolution: widget.canvasResolution);
-    _scaleScroller = ScrollController(initialScrollOffset: 0);
-    _scaleScroller.addListener((){
+    widget.moveController.addListener(() {
+      setState(() {});
+    });
+    widget.scrollController.addListener(() {
       setState(() {});
     });
   }
@@ -93,132 +95,52 @@ class _SubtitlePanelState extends State<SubtitlePanel> {
 
   @override
   void dispose() { 
-    _scaleScroller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Size renderSize = context.size;
-    // 1920 / 500 = 3.x 用 3.x 去縮
-    // 1080 / 500 = 2.x
-    // 800 / 500 = 1.6
-    // 900 / 500 = 1.8 用 1.8 縮
-    // double scaleX = widget.canvasResolution.width / renderSize.width; 
-    // double scaleY = widget.canvasResolution.height / renderSize.height;
     return LayoutBuilder(
       builder: (context, constraint) {
-        double scaleX = widget.canvasResolution.width / constraint.biggest.width; 
-        double scaleY = widget.canvasResolution.height / constraint.biggest.height;
-        double scale =  1.0 / Math.max(scaleX, scaleY);
-        double scaledWidth = widget.canvasResolution.width * scale;
-        double scaledHeight = widget.canvasResolution.height * scale;
-        double mouseScaler =  (_scaleScroller.hasClients ? (_scaleScroller.offset / 500) + 1.0 : 1.0);
-        double finalScale = scale * mouseScaler;
-
-        double widthTranslateMaximum = (scaledWidth * mouseScaler - scaledWidth).floorToDouble();
-        double heightTranslateMaximum = (scaledHeight * mouseScaler - scaledHeight).floorToDouble();
-
-        _translation = Offset(
-          -Math.min(widthTranslateMaximum, _translation.dx > 0 ? 0.0 : _translation.dx.abs()),
-          -Math.min(heightTranslateMaximum, _translation.dy > 0 ? 0.0 : _translation.dy.abs())
+        _painter.update(
+          scaleOffset: widget.scrollController.value,
+          translation: widget.moveController.value
         );
 
         return Container(
           child: Stack(
             children: <Widget>[
-              Transform.translate(
-                offset: Offset(
-                  scaleX > scaleY ? 0 : (constraint.biggest.width - scaledWidth) / 2,
-                  scaleX < scaleY ? 0 : (constraint.biggest.height - scaledHeight) / 2,
-                ) + _translation,
-                child: Transform.scale(
-                  alignment: Alignment.topLeft,
-                  scale: finalScale,
-                  child: CustomPaint(
-                    size: widget.canvasResolution,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return CustomPaint(
+                    size: Size(constraint.maxWidth, constraint.maxHeight),
                     painter: _painter,
-                  )
+                  );
+                }
+              ),
+              Listener(
+                onPointerDown: (pointer) {
+                  isTapped = true;
+                  setState(() {});
+                },
+                onPointerMove: (pointer) {
+                  setState(() {});
+                  widget.moveController.value -= pointer.delta;
+                },
+                onPointerUp: (pointer) {
+                  isTapped = false;
+                  setState(() {});
+                },
+                onPointerSignal: (pointer) {
+                  if(pointer is PointerScrollEvent) {
+                    widget.scrollController.value = Math.max(0.0, widget.scrollController.value + (pointer.scrollDelta.dy / 1000));
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  color: Colors.transparent,
                 )
               ),
-              Positioned.fromRect(
-                rect: scaleY > scaleX ? 
-                  Offset((constraint.biggest.width - scaledWidth) / 2, 0) & Size(scaledWidth, scaledHeight)
-                  :
-                  Offset(0, (constraint.biggest.height - scaledHeight) / 2) & Size(scaledWidth, scaledHeight),
-                // child: NotificationListener(
-                //   onNotification: (notification) {
-                //     setState(() {});
-                //     return false;
-                //   },
-                //   child: SingleChildScrollView(
-                //     controller: _scaleScroller,
-                //     physics: isTapped ? NeverScrollableScrollPhysics() : AlwaysScrollableScrollPhysics(),
-                //     child: Container(
-                //       width: scaledWidth,
-                //       height: scaledHeight + 1000, // 50 per scroll
-                //       color: Colors.transparent,
-                //     )
-                //   )
-                // )
-                child: Listener(
-                  onPointerDown: (pointer) {
-                    isTapped = true;
-                    setState(() {});
-                  },
-                  onPointerMove: (pointer) {
-                    // if(pointer.delta.distance < 10)
-                    //   return;
-                    //if(pointer.delta.distance)
-                    setState(() {});
-                    _translation += pointer.delta;
-                  },
-                  onPointerUp: (pointer) {
-                    isTapped = false;
-                    setState(() {});
-                  },
-                  child: SingleChildScrollView(
-                    controller: _scaleScroller,
-                    physics: isTapped ? NeverScrollableScrollPhysics() : AlwaysScrollableScrollPhysics(),
-                    child: Container(
-                      width: scaledWidth,
-                      height: scaledHeight + 1000, // 50 per scroll
-                      color: Colors.transparent,
-                    )
-                  )
-                ),
-              ),
-              // Positioned.fromRect(
-              //   rect: scaleY > scaleX ? 
-              //     Offset((constraint.biggest.width - scaledWidth) / 2, 0) & Size(scaledWidth, scaledHeight)
-              //     :
-              //     Offset(0, (constraint.biggest.height - scaledHeight) / 2) & Size(scaledWidth, scaledHeight),
-              //   child: GestureDetector(
-              //     onTapDown: (tap){
-              //       isTapped = true; 
-              //       setState(() {
-              //       });
-              //     },
-              //     onTapUp: (tap){
-              //       isTapped = false; 
-              //       setState(() {
-              //       });
-              //     },
-              //     onPanUpdate: (pan) {
-              //       //print(pan);
-              //       //isTapped = true;
-              //       _translation += pan.delta;
-              //       _translation = new Offset(
-              //         Math.min(widthTranslateMaximum, _translation.dx.abs()).roundToDouble(),
-              //         Math.min(heightTranslateMaximum, _translation.dy.abs()).roundToDouble()
-              //       );
-              //       setState(() {
-              //       });
-              //       //_painter.update(translate: _translation);
-              //     },
-              //     child: Container(color: Colors.transparent,),
-              //   ),
-              // ),
             ],
           )
         );
@@ -238,25 +160,42 @@ class SubtitlePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var rect = Offset.zero & _canvasResolution;
+    Rect rect = Offset.zero & _canvasResolution;
 
+    double scaleX = _canvasResolution.width / size.width; 
+    double scaleY = _canvasResolution.height / size.height;
+    double scale =  1.0 / Math.max(scaleX, scaleY);
+    // Maximum canvas size that keep ratio and fit in Area
+    double scaledWidth = _canvasResolution.width * scale;
+    double scaledHeight = _canvasResolution.height * scale;
+
+    // Check size difference
+    double originOffsetX = (size.width - scaledWidth) / 2;
+    double originOffsetY = (size.height - scaledHeight) / 2;
+
+    // draw full background
+    canvas.drawRect(Offset.zero & size, Paint()..color = Colors.black);
+
+    // save and create a new canvas/transition for actual CANVAS
+    canvas.saveLayer(null, Paint());
+    canvas.translate(-_translation.dx, -_translation.dy);
+    canvas.translate(originOffsetX, originOffsetY);
+    canvas.scale(scale + (_scaleOffset ?? 0));
+
+    // draw cancas background
     if(_isRenderBackground) {
       canvas.drawRect(rect, Paint()..shader = LinearGradient(
         colors:  [_canvasBackgroundColor, _canvasBackgroundColor] // [const Color(0xFFFFFF00), const Color(0xFFffffff)],
       ).createShader(rect));
     }
-      // canvas.drawRect(rect, Paint()..shader = RadialGradient(
-      //   center: const Alignment(0.7, -0.6),
-      //   radius: 0.2,
-      //   colors:  [const Color(0xFFFFFF00), const Color(0xFFffffff)],
-      //   stops: [0.4, 1.0],
-      // ).createShader(rect));
 
+    // draw shadow
     TextSpan originalSpan = _textPainter.text as TextSpan;
     if(_shadows != null && _shadows.isNotEmpty) {
-      // print("paint shadow");
-      TextSpan shadowSpan = TextSpan(text: originalSpan.text, style: originalSpan.style.copyWith(
-        /*foreground: _borderPaint != null ? _borderPaint : null,*/ shadows: _shadows));
+      TextSpan shadowSpan = TextSpan(text: originalSpan.text, style: originalSpan.style.copyWith( 
+          shadows: _shadows
+        )
+      );
       _textPainter.text = shadowSpan;
       _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
       if(_subtitleAlignment == SubtitleVerticalAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
@@ -264,8 +203,8 @@ class SubtitlePainter extends CustomPainter {
       if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
+    // draw text border
     if(_borderPaint != null && _borderPaint.strokeWidth > 0) {
-      //print("paint border");
       TextSpan borderSpan = TextSpan(text: originalSpan.text, style: originalSpan.style.copyWith(
         foreground: _borderPaint));
       _textPainter.text = borderSpan;
@@ -275,11 +214,14 @@ class SubtitlePainter extends CustomPainter {
       if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
     }
 
+    // draw text
     _textPainter.text = originalSpan;
     _textPainter.layout(minWidth: _canvasResolution.width - _padding.right, maxWidth: _canvasResolution.width - _padding.right);
     if(_subtitleAlignment == SubtitleVerticalAlignment.Top) _textPainter.paint(canvas, Offset(_padding.left, _padding.top));
     if(_subtitleAlignment == SubtitleVerticalAlignment.Center) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height / 2 - _textPainter.height / 2));
     if(_subtitleAlignment == SubtitleVerticalAlignment.Bottom) _textPainter.paint(canvas, Offset(_padding.left, _canvasResolution.height - _textPainter.height - _padding.bottom));
+    
+    canvas.restore();
   }
 
   bool _update = true;
@@ -289,6 +231,9 @@ class SubtitlePainter extends CustomPainter {
   List<Shadow> _shadows;
   bool _isRenderBackground = true;
   Color _canvasBackgroundColor = ColorPalette.secondaryColor;
+
+  double _scaleOffset = 0;
+  Offset _translation = Offset(0, 0);
 
   ///
   /// update the [span], which should have been used as subtitle span.
@@ -309,6 +254,8 @@ class SubtitlePainter extends CustomPainter {
     List<Shadow> shadows,
     bool isRenderBackground,
     Color canvasBackgroundColor,
+    double scaleOffset,
+    Offset translation,
   }) {
     if(subtitleHorizontalAlignment != null) {
       TextAlign align = TextAlign.center;
@@ -324,6 +271,8 @@ class SubtitlePainter extends CustomPainter {
     if(shadows != null) _shadows = shadows;
     if(isRenderBackground != null) _isRenderBackground = isRenderBackground;
     if(canvasBackgroundColor != null) _canvasBackgroundColor = canvasBackgroundColor;
+    if(scaleOffset != null) _scaleOffset = scaleOffset;
+    if(translation != null) _translation = translation;
     _update = true;
   }
 

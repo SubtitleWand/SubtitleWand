@@ -18,10 +18,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
+/// text for pure text, digit for only positive values, integer for all values
 enum AttributeFormFieldType {
+  /// All text supported
   text,
+  /// value >= 0
   digit,
+  /// value [-infinite ~ infinite]
   integer,
 }
 
@@ -33,17 +36,17 @@ class AttributeFormField extends StatelessWidget {
   final TextEditingController controller;
   /// init value
   final String initialValue;
-  /// when false, only positive number is allowed, true for non-negative numbers.
-  // final bool isNegative;
-  // void Function(String) onFieldSubmitted;
+  /// Input type, text, digit(+), integer(+/-)
   final AttributeFormFieldType type;
+  /// 
+  final bool readOnly;
+  
   AttributeFormField({
     Key key,
     this.controller,
     this.initialValue,
-    this.type
-    // this.isNegative = false,
-    // this.onFieldSubmitted
+    this.type,
+    this.readOnly = false,
   }) : super(key: key);
 
   @override
@@ -60,9 +63,7 @@ class AttributeFormField extends StatelessWidget {
       textAlign: TextAlign.center,
       maxLength: 4,
       textAlignVertical: TextAlignVertical.center,
-      // initialValue: _leftPadding.toString(),
-      // onFieldSubmitted: onFieldSubmitted,
-      // buildCounter: null,
+      readOnly: readOnly,
       buildCounter: (_, {currentLength, maxLength, isFocused}) => null,
     );
   }
