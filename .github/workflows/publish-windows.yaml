@@ -48,8 +48,8 @@ jobs:
           go-version: '1.13.3' # The Go version to download (if necessary) and use.
       - run: |
           go version
-      - name: Set Golang Enviroments
-        run: echo ::set-env name=GOPATH::$(go env GOPATH)
+      # - name: Set Golang Enviroments
+      #   run: echo ::set-env name=GOPATH::$(go env GOPATH)
       - name: Build exectuables
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
@@ -62,7 +62,7 @@ jobs:
           sudo apt-get install gcc libc6-dev
           sudo apt-get install libgl1-mesa-dev xorg-dev
           hover build windows
-          rm -rf go/build/outputs/windows/flutter_engine.pdb
+          rm go/build/outputs/windows/flutter_engine.pdb -fo
 
       - uses: actions/upload-artifact@v1
         with:
