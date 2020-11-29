@@ -61,7 +61,7 @@ jobs:
           go get -v -u github.com/go-flutter-desktop/hover
           flutter pub get
           hover build windows
-          rm go/build/outputs/windows/flutter_engine.pdb -fo
+          rm go/build/outputs/windows-release/flutter_engine.pdb -fo
         # sudo apt-get install build-essential libgl1-mesa-dev 
         # sudo apt-get install gcc libc6-dev
         # sudo apt-get install libgl1-mesa-dev xorg-dev
@@ -69,4 +69,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: windows
-          path: go/build/outputs/windows
+          path: go/build/outputs/windows-release
