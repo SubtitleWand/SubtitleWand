@@ -2,7 +2,7 @@
 
 # Subtitle Wand - An image-based subtitle generator that can be easily and rapidly integrated with any video editing program.
 
-[![codecov](https://codecov.io/gh/Tokenyet/SubtitleWand/branch/master/graph/badge.svg?token=DUE41G13YN)](https://codecov.io/gh/Tokenyet/SubtitleWand)
+[![codecov](https://codecov.io/gh/SubtitleWand/SubtitleWand/branch/master/graph/badge.svg?token=DUE41G13YN)](https://codecov.io/gh/SubtitleWand/SubtitleWand)
 
 [![build](https://github.com/SubtitleWand/SubtitleWand/workflows/build/badge.svg)](https://github.com/SubtitleWand/SubtitleWand/actions)
 
