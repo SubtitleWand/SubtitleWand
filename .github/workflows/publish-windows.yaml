@@ -8,6 +8,7 @@ on:
 env:
   flutter_channel: 'beta'
   flutter_version: '1.22.0-12.4.pre'
+  GO111MODULE: 'on'
 
 jobs:
   # Analyze and test each core package.
