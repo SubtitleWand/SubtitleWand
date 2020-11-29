@@ -13,7 +13,7 @@ env:
 jobs:
   # Analyze and test each core package.
   publish-linux:
-    if: ${{ github.actor == github.event.repository.owner.login }}
+    if: ${{ github.actor.login == github.event.repository.owner.login }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
