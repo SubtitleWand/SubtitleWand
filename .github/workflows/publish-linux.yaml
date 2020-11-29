@@ -52,9 +52,9 @@ jobs:
         env:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         # echo $(go env GOPATH)/bin >> $GITHUB_ENV
+        # echo $FLUTTER_DART_HOME >> $GITHUB_ENV
         run: |
           flutter doctor
-          echo $FLUTTER_DART_HOME >> $GITHUB_ENV
           go get -v -u github.com/go-flutter-desktop/hover
           sudo apt-get install build-essential libgl1-mesa-dev 
           sudo apt-get install gcc libc6-dev
