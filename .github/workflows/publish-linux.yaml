@@ -59,13 +59,6 @@ jobs:
           sudo apt-get install build-essential libgl1-mesa-dev 
           sudo apt-get install gcc libc6-dev
           sudo apt-get install libgl1-mesa-dev xorg-dev
-          echo $PATH
-          echo 'ls /opt/hostedtoolcache/go/1.13.3/x64/bin'
-          ls /opt/hostedtoolcache/go/1.13.3/x64/bin
-          echo 'ls /home/runner/go/bin'
-          ls /home/runner/go/bin
-          ls /home/runner/go
-          echo $(go env)
           flutter pub get
           hover build linux
 
