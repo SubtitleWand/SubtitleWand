@@ -13,7 +13,6 @@ env:
 jobs:
   # Analyze and test each core package.
   publish-linux:
-    if: ${{ github.event.repository.owner.login == 'Tokenyet' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
