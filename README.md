@@ -4,10 +4,9 @@
 
 [![codecov](https://codecov.io/gh/SubtitleWand/SubtitleWand/branch/master/graph/badge.svg?token=DUE41G13YN)](https://codecov.io/gh/SubtitleWand/SubtitleWand)
 
-[![build](https://github.com/SubtitleWand/SubtitleWand/workflows/build/badge.svg)](https://github.com/SubtitleWand/SubtitleWand/actions)
+[![build](https://img.shields.io/github/workflow/status/SubtitleWand/SubtitleWand/Main/master)](https://github.com/SubtitleWand/SubtitleWand/actions)
 
-
-[![downloads](https://img.shields.io/github/downloads/SubtitleWand/SubtitleWand/latest/total)](https://github.com/SubtitleWand/SubtitleWand/releases)
+[![downloads](https://img.shields.io/github/downloads/SubtitleWand/SubtitleWand/total)](https://github.com/SubtitleWand/SubtitleWand/releases)
 
 [DEMO](https://www.youtube.com/watch?v=BeSdYeeK4QU)
 
