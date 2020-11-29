@@ -6,8 +6,8 @@ on:
       - ci-cd-publish-windows/**
 
 env:
-  flutter_channel: 'beta'
-  flutter_version: '1.22.0-12.4.pre'
+  flutter_channel: 'stable'
+  flutter_version: '1.22.4'
   GO111MODULE: 'on'
 
 jobs:
