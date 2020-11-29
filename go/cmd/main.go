@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-flutter-desktop/go-flutter"
 	"github.com/pkg/errors"
-	"github.com/gonutz/w32" // hide black console
+	//  "github.com/gonutz/w32" // hide black console
 )
 
 // vmArguments may be set by hover at compile-time
@@ -24,13 +24,13 @@ func main() {
 		flutter.WindowIcon(iconProvider),
 	}
 
-	console := w32.GetConsoleWindow() // hide black console
-	if console != 0 {
-			_, consoleProcID := w32.GetWindowThreadProcessId(console)
-			if w32.GetCurrentProcessId() == consoleProcID {
-					w32.ShowWindowAsync(console, w32.SW_HIDE)
-			}
-	}
+	// console := w32.GetConsoleWindow() // hide black console
+	// if console != 0 {
+	// 		_, consoleProcID := w32.GetWindowThreadProcessId(console)
+	// 		if w32.GetCurrentProcessId() == consoleProcID {
+	// 				w32.ShowWindowAsync(console, w32.SW_HIDE)
+	// 		}
+	// }
 
 	err := flutter.Run(append(options, mainOptions...)...)
 	if err != nil {
