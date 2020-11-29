@@ -66,6 +66,7 @@ jobs:
           ls /home/runner/go/bin
           ls /home/runner/go
           echo $(go env)
+          flutter pub get
           hover build linux
 
       - uses: actions/upload-artifact@v1
