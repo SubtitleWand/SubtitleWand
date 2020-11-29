@@ -45,7 +45,7 @@ class AttributeFormField extends StatelessWidget {
     Key key,
     this.controller,
     this.initialValue,
-    this.type,
+    @required this.type,
     this.readOnly = false,
   }) : super(key: key);
 

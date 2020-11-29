@@ -9,6 +9,7 @@ void main() {
         home: Material(
           child: Center(
             child: AttributeFormField(
+              type: AttributeFormFieldType.text,
             ),
           ),
         ),
@@ -30,6 +31,7 @@ void main() {
         home: Material(
           child: Center(
             child: AttributeFormField(
+              type: AttributeFormFieldType.text,
               controller: controller,
             ),
           ),
@@ -53,6 +55,7 @@ void main() {
           child: Center(
             child: AttributeFormField(
               initialValue: INITIAL_VALUE,
+              type: AttributeFormFieldType.text,
             ),
           ),
         ),
@@ -63,12 +66,13 @@ void main() {
   });
 
   
-  testWidgets('Allow positive number by default', (tester) async {
+  testWidgets('Allow only positive number', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
+              type: AttributeFormFieldType.digit,
             ),
           ),
         ),
@@ -81,7 +85,7 @@ void main() {
     expect(find.text('123'), findsOneWidget);
   });
 
-  testWidgets('Set isMinusable to false (default), will restrict non-positive numbers/symbols', (tester) async {
+  testWidgets('Allow all integer values', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
@@ -97,26 +101,26 @@ void main() {
     await tester.enterText(find.byType(AttributeFormField), '-1234');
     await tester.pump();
 
-    expect(find.text('1234'), findsOneWidget);
+    expect(find.text('-123'), findsOneWidget);
   });
 
-  testWidgets('Set isMinusable to false (default), will restrict non-positive numbers/symbols', (tester) async {
+  testWidgets('Allow all text', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
-              type: AttributeFormFieldType.integer,
+              type: AttributeFormFieldType.text,
             ),
           ),
         ),
       ),
     );
 
-    await tester.enterText(find.byType(AttributeFormField), '-1234');
+    await tester.enterText(find.byType(AttributeFormField), '-!@!a');
     await tester.pump();
 
-    expect(find.text('-1234'), findsNothing);
-    expect(find.text('-123'), findsOneWidget);
+    expect(find.text('-!@!a'), findsNothing);
+    expect(find.text('-!@!'), findsOneWidget);
   });
 }
