@@ -54,9 +54,9 @@ jobs:
         run: |
           flutter doctor
           go get -v -u github.com/go-flutter-desktop/hover
-          sudo apt-get install build-essential libgl1-mesa-dev 
-          sudo apt-get install gcc libc6-dev
-          sudo apt-get install libgl1-mesa-dev xorg-dev
+        # sudo apt-get install build-essential libgl1-mesa-dev 
+        # sudo apt-get install gcc libc6-dev
+        # sudo apt-get install libgl1-mesa-dev xorg-dev
           flutter pub get
           hover build darwin-bundle
           ls go/build/outputs
