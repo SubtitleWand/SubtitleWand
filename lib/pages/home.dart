@@ -26,16 +26,20 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart' show LogicalKeyboardKey, PlatformException, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:formz/formz.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/components/project/attribute_form_field.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/attribute.dart';
+import 'package:subtitle_wand/pages/_components/dialogs/app_about_dialog.dart';
+import 'package:subtitle_wand/pages/_components/dialogs/coffee_dialog.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
 import 'package:subtitle_wand/utilities/logger_util.dart';
 import 'package:subtitle_wand/utilities/process_util.dart';
+import 'package:subtitle_wand/utilities/version.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -366,7 +370,58 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text('Version: 0.1.0',),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    if(index == 0) {
+                      return GestureDetector(
+                        child: Image.asset('resources/icon.png'),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AppAboutDialog();
+                            }
+                          );
+                        },
+                      );
+                    }
+                    if(index == 1) {
+                      return GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: FaIcon(
+                            FontAwesomeIcons.coffee,
+                            color: Colors.brown,
+                          )
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CoffeeDialog();
+                            }
+                          );
+                        },
+                      );
+                    }
+                    return Container();
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(width: 8,);
+                  },
+                  itemCount: 2,
+                  scrollDirection: Axis.horizontal,
+                )
+              ),
+              SizedBox(width: 8,),
+              Text('Version: ${Version.number}',),
+            ],
+          ),
           isSavingState ?
           Container(
             width: 160,
