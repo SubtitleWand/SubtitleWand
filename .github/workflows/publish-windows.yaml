@@ -59,6 +59,7 @@ jobs:
           echo $(go env GOPATH)/bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo $FLUTTER_DART_HOME | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           go get -v -u github.com/go-flutter-desktop/hover
+          flutter pub get
           hover build windows
           rm go/build/outputs/windows/flutter_engine.pdb -fo
         # sudo apt-get install build-essential libgl1-mesa-dev 
