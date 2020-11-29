@@ -65,4 +65,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: linux
-          path: go/build/outputs/linux
+          path: go/build/outputs/linux-release
