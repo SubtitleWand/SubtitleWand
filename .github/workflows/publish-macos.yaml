@@ -13,14 +13,13 @@ env:
 jobs:
   # Analyze and test each core package.
   publish-macos:
-    if: github.actor == github.event.repository.owner.login
-    runs-on: ${{ matrix.os }}
+=    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         folder: ['.']
-        os: [ubuntu-latest]
+        os: [macos-latest]
         include:
-          - os: ubuntu-latest
+          - os: macos-latest
             flutter_path: /opt/hostedtoolcache/flutter
       fail-fast: false
     steps:
@@ -44,7 +43,7 @@ jobs:
         with:
           channel: ${{ env.flutter_channel }}
           flutter-version: ${{ env.flutter_version }}
-      - uses: actions/setup-go@v2-beta
+      - uses: actions/setup-go@v2
         with:
           go-version: '1.13.3' # The Go version to download (if necessary) and use.
       - run: |
@@ -54,21 +53,15 @@ jobs:
           FLUTTER_DART_HOME: ${{ env.FLUTTER_HOME }}/bin/cache/dart-sdk/bin
         run: |
           flutter doctor
-          export PATH=$PATH:$(go env GOPATH)/bin
-          export PATH=$PATH:$FLUTTER_DART_HOME
           go get -v -u github.com/go-flutter-desktop/hover
           sudo apt-get install build-essential libgl1-mesa-dev 
           sudo apt-get install gcc libc6-dev
           sudo apt-get install libgl1-mesa-dev xorg-dev
-          echo $PATH
-          echo 'ls /opt/hostedtoolcache/go/1.13.3/x64/bin'
-          ls /opt/hostedtoolcache/go/1.13.3/x64/bin
-          echo 'ls /home/runner/go/bin'
-          ls /home/runner/go/bin
-          ls /home/runner/go
+          flutter pub get
           hover build darwin-bundle
+          ls go/build/outputs
 
       - uses: actions/upload-artifact@v1
         with:
           name: darwin
-          path: go/build/outputs/darwin-bundle
+          path: go/build/outputs/darwin-release
