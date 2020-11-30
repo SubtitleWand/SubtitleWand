@@ -37,7 +37,7 @@ All prepared, you could use `hover run` to run the project.
 Fork the project, and follow the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Support
-If you want to support this project feel free to go [here](https://subtitlewand.github.io/donation).
+Leave a ⭐️ is a good support for the project ☺️, Or [donation](https://subtitlewand.github.io/donation) is also a good choice 👍
 
 ## Maintainers
 - [Tokenyet](https://github.com/Tokenyet)
