@@ -26,7 +26,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter/services.dart' show LogicalKeyboardKey, PlatformException, RawKeyDownEvent, RawKeyUpEvent, RawKeyboard;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:formz/formz.dart';
 import 'package:pedantic/pedantic.dart';
 import 'package:subtitle_wand/components/project/attribute_form_field.dart';
@@ -34,8 +33,8 @@ import 'package:subtitle_wand/design/color_palette.dart';
 import 'package:subtitle_wand/pages/_components/attribute.dart';
 import 'package:subtitle_wand/pages/_components/dialogs/app_about_dialog.dart';
 import 'package:subtitle_wand/pages/_components/dialogs/coffee_dialog.dart';
-import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/_components/subtitle_panel.dart';
+import 'package:subtitle_wand/pages/_components/subtitle_panel_controller.dart';
 import 'package:subtitle_wand/pages/home_bloc.dart' as MPB;
 import 'package:subtitle_wand/utilities/logger_util.dart';
 import 'package:subtitle_wand/utilities/process_util.dart';
@@ -392,13 +391,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     }
                     if(index == 1) {
                       return GestureDetector(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 4),
-                          child: FaIcon(
-                            FontAwesomeIcons.coffee,
-                            color: Colors.brown,
-                          )
-                        ),
+                        child: Icon(Icons.star, color: Colors.yellow),
                         onTap: () {
                           showDialog(
                             context: context,
