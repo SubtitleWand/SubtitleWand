@@ -10,6 +10,7 @@ ios/
 _macro_editor/
 coverage/
 packages
+.fvm/flutter_sdk
 .flutter-plugins
 .flutter-plugins-dependencies
 # Since the current expectation is that clients are using Flutter head,
