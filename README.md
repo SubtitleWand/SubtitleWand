@@ -13,7 +13,7 @@
 
 This is a universal solution for subtitle to video maker, such as Windows Movie Maker/Sony vegas/ Hitfilm. The motivation is that [Hitfilm](https://fxhome.com/hitfilm-express) do not have a proper way to add subtitle as fast as possible, and the workarounds, Multiple Compisite Shot, One Shot with line moving/masking, Subtitle plugin are fairly tricky and tired for me.
 
-Subtitle Wand has two methods, one is to target on embedding one subtitle per frame to optimize perfomance, and user could slow the duration to get fully controll on each subtitle. Another is to export video with SRT, required ffmpeg installed, tho.
+Subtitle Wand has two methods, one is to target on embedding whole subtitles splited by frame to optimize perfomance, and user could slow the duration to get fully controll on each subtitle. Another is to export video with SRT, required ffmpeg installed, tho.
 
 ## How to use
 
