@@ -9,8 +9,7 @@ import 'package:flutter/services.dart';
 ///
 class FontManager {
   final Map<String, FontLoader> _fonts;
-  FontManager() :
-    _fonts = <String, FontLoader>{};
+  FontManager() : _fonts = <String, FontLoader>{};
 
   ///
   /// Assign [fontFamilyName] to flutter's FontLoader, with [pathToTTF] from file system.
@@ -18,17 +17,22 @@ class FontManager {
   Future<void> addFont(String fontFamilyName, String pathToTTF) async {
     File file;
     try {
-      file = File('$pathToTTF');
-    } catch(err) {
+      file = File(pathToTTF);
+    } catch (err) {
       // throw err;
       rethrow;
     }
     Uint8List list = await file.readAsBytes();
-    _fonts[fontFamilyName] = FontLoader(fontFamilyName);
-    _fonts[fontFamilyName].addFont(Future.sync(() {
-      return ByteData.view(list.buffer);
-    }));
-    await _fonts[fontFamilyName].load();
+    final fontLoader = FontLoader(fontFamilyName);
+    _fonts[fontFamilyName] = fontLoader;
+    fontLoader.addFont(
+      Future.sync(
+        () {
+          return ByteData.view(list.buffer);
+        },
+      ),
+    );
+    await fontLoader.load();
   }
 
   ///

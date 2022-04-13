@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:subtitle_wand/components/project/attribute_form_field.dart';
+import 'package:subtitle_wand/widgets/project/attribute_form_field.dart';
 
 void main() {
   testWidgets('limited to the length of 4', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
@@ -48,13 +48,13 @@ void main() {
   });
 
   testWidgets('initialValue should set at first render', (tester) async {
-    const INITIAL_VALUE = 'VALUE';
+    const initialValue = 'VALUE';
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
-              initialValue: INITIAL_VALUE,
+              initialValue: initialValue,
               type: AttributeFormFieldType.text,
             ),
           ),
@@ -62,13 +62,12 @@ void main() {
       ),
     );
 
-    expect(find.text(INITIAL_VALUE), findsOneWidget);
+    expect(find.text(initialValue), findsOneWidget);
   });
 
-  
   testWidgets('Allow only positive number', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
@@ -79,7 +78,10 @@ void main() {
       ),
     );
 
-    await tester.enterText(find.byType(AttributeFormField), 'This_will^&not-_123');
+    await tester.enterText(
+      find.byType(AttributeFormField),
+      'This_will^&not-_123',
+    );
     await tester.pump();
 
     expect(find.text('123'), findsOneWidget);
@@ -87,7 +89,7 @@ void main() {
 
   testWidgets('Allow all integer values', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(
@@ -106,7 +108,7 @@ void main() {
 
   testWidgets('Allow all text', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Material(
           child: Center(
             child: AttributeFormField(

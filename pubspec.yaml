@@ -1,62 +1,129 @@
 name: subtitle_wand
 description: An Universal subtitle solution for helping video making without dependency of any software.
 
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
 version: 0.2.0
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
-  # The example interacts with build scripts on the Flutter side that are not
-  # yet stable, so it requires a very recent version of Flutter.
-  # This version will increase regularly as the build scripts change.
-  flutter: '>=1.10.2-pre.54'
+  sdk: ">=2.15.1 <3.0.0"
 
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
     sdk: flutter
   text_to_path_maker: ^0.5.7
   utf: ^0.9.0+5
-  flutter_colorpicker: ^0.2.6
-  
-  configurable_expansion_tile: ^1.0.0
-  cupertino_icons: ^0.1.0
-  file_picker: ^1.13.3
-  draggable_scrollbar: ^0.0.4
+  flutter_colorpicker: ^1.0.3
+  configurable_expansion_tile_null_safety: ^2.0.0
+  file_picker: ^4.5.1
+  draggable_scrollbar: ^0.1.0
 
-  bloc: ^6.1.0
-  flutter_bloc: ^6.1.1
-  equatable: ^1.2.5
-  formz: ^0.3.2
+  bloc: ^8.0.3
+  flutter_bloc: ^8.0.1
+  equatable: ^2.0.3
+  formz: ^0.4.1
+
+  font_awesome_flutter: ^10.1.0
+  url_launcher: ^6.0.20
 
 
-  path_provider: ^1.6.5
-  path_provider_macos: ^0.0.4
-  path: ^1.6.4
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
 
-  pedantic: ^1.9.2
-  url_launcher: ^5.7.10
-  font_awesome_flutter: ^8.10.0
-  
+  # wrapper
+  path: ^1.8.0
+  file: ^6.1.2
+  process:
+    git: 
+      url: https://github.com/Tokenyet/process.dart.git
+      ref: 9a9b873604a0c8f58d1419e160146885fd8392b6
+
+  # windows
+  desktop_window: ^0.4.0
+  platform: ^3.1.0
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+      ref: 03d957e8b5c99fc83cd4a781031b154ab3de8753
+
+  # private
+  image_repository:
+    path: packages/image_repository
+  ffmpeg_repository:
+    path: packages/ffmpeg_repository
+  font_repository:
+    path: packages/font_repository
+  launcher_repository:
+    path: packages/launcher_repository
+  srt_repository:
+    path: packages/srt_repository
+  wand_api:
+    path: packages/wand_api
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^1.0.0
+
+  build_runner: ^2.1.8
+  build_version: ^2.1.0
+
+  # private
+  test_utilities:
+    path: packages/test_utilities
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
 flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
   uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
   assets:
     - resources/
-  # See https://github.com/flutter/flutter/wiki/Desktop-shells#fonts
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: fonts/Roboto/Roboto-Thin.ttf
-          weight: 100
-        - asset: fonts/Roboto/Roboto-Light.ttf
-          weight: 300
-        - asset: fonts/Roboto/Roboto-Regular.ttf
-          weight: 400
-        - asset: fonts/Roboto/Roboto-Medium.ttf
-          weight: 500
-        - asset: fonts/Roboto/Roboto-Bold.ttf
-          weight: 700
-        - asset: fonts/Roboto/Roboto-Black.ttf
-          weight: 900
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
