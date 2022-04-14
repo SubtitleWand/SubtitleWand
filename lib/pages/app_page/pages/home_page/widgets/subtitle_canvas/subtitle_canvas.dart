@@ -1,11 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/frame_panel.dart';
 
 import 'dart:math' as math;
 
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/frame_panel.dart';
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_panel/subtitle_panel.dart';
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_panel/subtitle_panel_controller.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_canvas/subtitle_canvas_controller.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_painter/subtitle_painter.dart';
 
 class SubtitleCanvas extends StatefulWidget {
   const SubtitleCanvas({
@@ -58,23 +58,23 @@ class SubtitleCanvas extends StatefulWidget {
 }
 
 class _SubtitleCanvasState extends State<SubtitleCanvas> {
-  late SubtitlePanelMoveController _subtitlePanelMoveController;
-  late SubtitlePanelScrollController _subtitlePanelScrollController;
+  late SubtitleCanvasMoveController _subtitleCanvasMoveController;
+  late SubtitleCanvasScrollController _subtitleCanvasScrollController;
   bool isTapped = false;
   late ValueNotifier<int> _subtitleIndex;
 
   @override
   void initState() {
     super.initState();
-    _subtitlePanelMoveController = SubtitlePanelMoveController(Offset.zero);
-    _subtitlePanelScrollController = SubtitlePanelScrollController(0);
+    _subtitleCanvasMoveController = SubtitleCanvasMoveController(Offset.zero);
+    _subtitleCanvasScrollController = SubtitleCanvasScrollController(0);
     _subtitleIndex = ValueNotifier(0);
   }
 
   @override
   void dispose() {
-    _subtitlePanelMoveController.dispose();
-    _subtitlePanelScrollController.dispose();
+    _subtitleCanvasMoveController.dispose();
+    _subtitleCanvasScrollController.dispose();
     super.dispose();
   }
 
@@ -99,10 +99,10 @@ class _SubtitleCanvasState extends State<SubtitleCanvas> {
         child: Stack(
           children: [
             ValueListenableBuilder(
-              valueListenable: _subtitlePanelMoveController,
+              valueListenable: _subtitleCanvasMoveController,
               builder: (BuildContext context, dynamic value, Widget? child) {
                 return ValueListenableBuilder(
-                  valueListenable: _subtitlePanelScrollController,
+                  valueListenable: _subtitleCanvasScrollController,
                   builder:
                       (BuildContext context, dynamic value, Widget? child) {
                     return ValueListenableBuilder(
@@ -142,8 +142,8 @@ class _SubtitleCanvasState extends State<SubtitleCanvas> {
                                 widget.propertyCanvasResolutionY.toDouble(),
                             propertyCanvasBackgroundColor:
                                 widget.propertyCanvasBackgroundColor,
-                            translation: _subtitlePanelMoveController.value,
-                            scaleOffset: _subtitlePanelScrollController.value,
+                            translation: _subtitleCanvasMoveController.value,
+                            scaleOffset: _subtitleCanvasScrollController.value,
                             subtitleText: widget.subtitles.isEmpty
                                 ? ''
                                 : widget.subtitles[_subtitleIndex.value],
@@ -161,16 +161,16 @@ class _SubtitleCanvasState extends State<SubtitleCanvas> {
               },
               onPointerMove: (pointer) {
                 if (!isTapped) return;
-                _subtitlePanelMoveController.value -= pointer.delta;
+                _subtitleCanvasMoveController.value -= pointer.delta;
               },
               onPointerUp: (pointer) {
                 isTapped = false;
               },
               onPointerSignal: (pointer) {
                 if (pointer is PointerScrollEvent) {
-                  _subtitlePanelScrollController.value = math.max(
+                  _subtitleCanvasScrollController.value = math.max(
                     0.0,
-                    _subtitlePanelScrollController.value +
+                    _subtitleCanvasScrollController.value +
                         (pointer.scrollDelta.dy / 1000),
                   );
                 }
@@ -192,10 +192,10 @@ class _SubtitleCanvasState extends State<SubtitleCanvas> {
                   );
                 },
                 onResetPos: () {
-                  _subtitlePanelMoveController.value = Offset.zero;
+                  _subtitleCanvasMoveController.value = Offset.zero;
                 },
                 onResetScale: () {
-                  _subtitlePanelScrollController.value = 0;
+                  _subtitleCanvasScrollController.value = 0;
                 },
               ),
             )

@@ -1,10 +1,6 @@
-import 'dart:async';
-import 'dart:io';
 import 'dart:math' as Math;
-import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Image;
-import 'package:path/path.dart' as p;
 
 /// Which way for Subtitle to align horizontally.
 enum SubtitleHorizontalAlignment { left, center, right }

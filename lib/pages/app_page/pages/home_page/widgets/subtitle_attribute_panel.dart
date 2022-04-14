@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_panel/subtitle_panel.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_painter/subtitle_painter.dart';
 import 'package:subtitle_wand/widgets/attribute.dart';
 import 'package:subtitle_wand/pages/app_page/pages/home_page/bloc/font_picker_cubit.dart';
 import 'package:subtitle_wand/pages/app_page/pages/home_page/bloc/subtitle_attribute_bloc.dart';

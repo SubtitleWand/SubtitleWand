@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/rendering.dart';
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_panel/subtitle_panel.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_painter/subtitle_painter.dart';
 import 'package:wand_api/wand_api.dart';
 
 abstract class SubtitleAttributeEvent extends Equatable {

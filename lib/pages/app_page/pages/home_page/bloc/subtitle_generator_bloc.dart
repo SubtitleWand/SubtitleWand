@@ -6,9 +6,8 @@ import 'package:equatable/equatable.dart';
 import 'package:ffmpeg_repository/ffmpeg_repository.dart';
 import 'package:image_repository/image_repository.dart';
 import 'package:launcher_repository/launcher_repository.dart';
+import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_painter/subtitle_painter.dart';
 import 'package:wand_api/wand_api.dart';
-
-import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_panel/subtitle_panel.dart';
 
 class NoException implements Exception {
   const NoException();
