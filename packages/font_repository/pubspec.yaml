@@ -26,7 +26,10 @@ dependencies:
   json_annotation: ^4.4.0
   wand_api:
     path: ../wand_api
-  file_picker: ^4.5.1
+  file_picker:
+    git:
+      url: https://github.com/Tokenyet/flutter_file_picker.git
+      ref: ac2387a6a6a1c51102bba15f5def335d07e623bd
 
 dev_dependencies:
   flutter_test:

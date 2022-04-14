@@ -26,7 +26,7 @@ dependencies:
   json_annotation: ^4.4.0
   wand_api:
     path: ../wand_api
-  file_picker: ^4.5.1
+
 
 dev_dependencies:
   flutter_test:

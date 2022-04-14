@@ -11,8 +11,10 @@ import 'package:srt_repository/srt_repository.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:subtitle_wand/pages/app_page/app_page.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:path/path.dart' as p;
 
-void main() async {
+void main(List<String> args) async {
+  const isProduction = bool.fromEnvironment('dart.vm.product');
   // debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   // debugPaintSizeEnabled = true;
   // await LoggerUtil.getInstance().configure(
@@ -29,6 +31,16 @@ void main() async {
   const launcherRepo = LauncherRepository(launcher.canLaunch, launcher.launch);
   final srtRepo = SrtRepository(fileSystem: fileSystem, picker: picker);
   final imageRepo = ImageRepository(fileSystem: fileSystem);
+
+  if (!isProduction || args.contains('-dev')) {
+    final absoluteProjectDir = fileSystem.currentDirectory.absolute;
+    // Prevent Hot Restart from bug
+    if (!absoluteProjectDir.path.contains('DEV_PROJECT')) {
+      final targetDir = p.join(absoluteProjectDir.path, 'DEV_PROJECT');
+      await fileSystem.directory(targetDir).create();
+      fileSystem.currentDirectory = targetDir;
+    }
+  }
 
   runApp(
     SubtitleWandApp(

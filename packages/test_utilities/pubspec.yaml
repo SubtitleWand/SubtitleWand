@@ -1,5 +1,5 @@
 name: test_utilities
-description: A Dart Repository which the process cleanup domain.
+description: A Dart Repository which the test utilities domain.
 
 publish_to: none
 
