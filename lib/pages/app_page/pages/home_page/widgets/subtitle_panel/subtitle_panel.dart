@@ -229,43 +229,43 @@ class SubtitlePainter extends CustomPainter {
   /// save image with [canvasSize] and transform to [resolutionSize],
   /// and will be saved in [directory], the name is [snapshot].png
   ///
-  Future<void> saveImage(
-    Size canvasSize,
-    Size resolutionSize,
-    String directory,
-    String snapshot,
-  ) async {
-    PictureRecorder recorder = PictureRecorder();
-    Canvas canvas = Canvas(recorder);
+  // Future<void> saveImage(
+  //   Size canvasSize,
+  //   Size resolutionSize,
+  //   String directory,
+  //   String snapshot,
+  // ) async {
+  //   PictureRecorder recorder = PictureRecorder();
+  //   Canvas canvas = Canvas(recorder);
 
-    // bool originalSettingBackground = _isRenderBackground;
-    // _isRenderBackground = false;
+  //   // bool originalSettingBackground = _isRenderBackground;
+  //   // _isRenderBackground = false;
 
-    paint(canvas, canvasSize);
+  //   paint(canvas, canvasSize);
 
-    // _isRenderBackground = originalSettingBackground;
+  //   // _isRenderBackground = originalSettingBackground;
 
-    Image image = await recorder
-        .endRecording()
-        .toImage(resolutionSize.width.toInt(), resolutionSize.height.toInt());
-    var pngBytes = await image.toByteData(format: ImageByteFormat.png);
+  //   Image image = await recorder
+  //       .endRecording()
+  //       .toImage(resolutionSize.width.toInt(), resolutionSize.height.toInt());
+  //   var pngBytes = await image.toByteData(format: ImageByteFormat.png);
 
-    // create folder first, but no mac, mac will create file with folders
-    if (!Platform.isMacOS && !await Directory(directory).exists()) {
-      await Directory(directory).create();
-    }
+  //   // create folder first, but no mac, mac will create file with folders
+  //   if (!Platform.isMacOS && !await Directory(directory).exists()) {
+  //     await Directory(directory).create();
+  //   }
 
-    if (Platform.isMacOS) {
-      Directory appDocDir =
-          Directory(''); //await getApplicationDocumentsDirectory();
-      String path = p.join(appDocDir.path, directory, '$snapshot.png');
-      File createdFile = await File(path).create(recursive: true);
-      await createdFile.writeAsBytes(pngBytes!.buffer.asInt8List());
-    } else {
-      await File('$directory/$snapshot.png')
-          .writeAsBytes(pngBytes!.buffer.asInt8List());
-    }
-  }
+  //   if (Platform.isMacOS) {
+  //     Directory appDocDir =
+  //         Directory(''); //await getApplicationDocumentsDirectory();
+  //     String path = p.join(appDocDir.path, directory, '$snapshot.png');
+  //     File createdFile = await File(path).create(recursive: true);
+  //     await createdFile.writeAsBytes(pngBytes!.buffer.asInt8List());
+  //   } else {
+  //     await File('$directory/$snapshot.png')
+  //         .writeAsBytes(pngBytes!.buffer.asInt8List());
+  //   }
+  // }
 
   @override
   bool shouldRepaint(SubtitlePainter oldDelegate) {
