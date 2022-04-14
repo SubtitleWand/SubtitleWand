@@ -88,7 +88,10 @@ dev_dependencies:
   # private
   test_utilities:
     path: packages/test_utilities
-
+  melos: 
+    git: 
+      url: https://github.com/Tokenyet/melos.git
+      path: packages/melos
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
