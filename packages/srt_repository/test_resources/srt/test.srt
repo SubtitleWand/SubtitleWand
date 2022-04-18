@@ -1,0 +1,24 @@
+1
+00:00:02,719 --> 00:00:05,813
+Are you still using the traditional terminal?
+
+2
+00:00:06,266 --> 00:00:09,109
+Let me introduce you MinecraftCube
+
+3
+00:00:10,432 --> 00:00:12,447
+You might want to take a look at my animation
+
+4
+00:00:12,548 --> 00:00:14,657
+made for MinecraftCube
+
+5
+00:00:14,767 --> 00:00:17,042
+No relation to the app, tho
+
+6
+00:00:18,252 --> 00:00:21,377
+This demo will not cover all details
+
