@@ -1,14 +1,10 @@
-@Tags(['integration'])
-import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_repository/font_repository.dart';
-import 'package:process/process.dart';
-import 'package:test_utilities/test_utilities.dart';
 import 'package:path/path.dart' as p;
-import 'package:wand_api/wand_api.dart';
+import 'package:test_utilities/test_utilities.dart';
 
 void main() {
   late FontRepository repository;
@@ -33,7 +29,7 @@ void main() {
 
     group('addFont', () {
       final rootPath =
-          TestUtilities().getTestProjectDir(name: 'ffmpeg_repository_test');
+          TestUtilities().getTestProjectDir(name: 'font_repository_test');
 
       setUp(() async {
         await rootPath.create(recursive: true);
