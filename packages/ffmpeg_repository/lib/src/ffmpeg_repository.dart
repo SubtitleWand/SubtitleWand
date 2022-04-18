@@ -72,6 +72,7 @@ class FFmpegRepository {
     await ffmpegFile.writeAsString(results);
   }
 
+  // Should be tested publicly
   String _transformToContact(List<TimeText> texts) {
     String result = 'ffconcat version 1.0\n';
     double different = 0.5;

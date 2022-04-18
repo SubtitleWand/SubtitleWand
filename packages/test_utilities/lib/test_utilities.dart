@@ -1,5 +1,6 @@
 library test_utilities;
 
+export 'src/io_patch.dart';
 export 'src/test_utilities.dart';
 export 'src/process_terminator.dart';
 export 'src/test_resource_server.dart';

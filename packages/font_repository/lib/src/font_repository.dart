@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
@@ -14,9 +15,10 @@ class FontRepository {
   FontRepository({
     FileSystem? fileSystem,
     FilePicker? picker,
+    @visibleForTesting List<String>? cachedFonts,
   })  : _fileSystem = fileSystem ?? const LocalFileSystem(),
         _picker = picker ?? FilePicker.platform,
-        _cachedFonts = [];
+        _cachedFonts = cachedFonts ?? [];
 
   Future<String> pickFont() async {
     final result = await _picker.pickFiles(
@@ -31,12 +33,12 @@ class FontRepository {
     }
   }
 
+  @visibleForTesting
   Future<String> addFont({required String filePath}) async {
-    File file = _fileSystem.file(filePath);
-
     final filename = p.basename(filePath);
     if (_cachedFonts.contains(filename)) return filename;
 
+    File file = _fileSystem.file(filePath);
     Uint8List list = await file.readAsBytes();
     final fontLoader = FontLoader(filename);
 
