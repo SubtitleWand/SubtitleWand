@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:subtitle_wand/_gen/version.gen.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
-import 'package:subtitle_wand/utilities/version.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppAboutDialog extends StatelessWidget {
@@ -50,7 +50,7 @@ class AppAboutDialog extends StatelessWidget {
                       }
                     },
                 ),
-                TextSpan(text: '  v${Version.number}', style: style),
+                TextSpan(text: '  v$packageVersion', style: style),
               ],
             ),
           ),
