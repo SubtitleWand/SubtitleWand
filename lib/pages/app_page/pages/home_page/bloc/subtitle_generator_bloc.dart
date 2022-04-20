@@ -241,7 +241,7 @@ class SubtitleGeneratorBloc
       );
       emit(
         currentState.copyWith(
-          progress: i.toDouble() / subtitleTexts.length.toDouble(),
+          progress: (i.toDouble() + 1) / subtitleTexts.length.toDouble(),
           status: NetworkStatus.inProgress,
         ),
       );
