@@ -11,6 +11,14 @@ class FontPickerState extends Equatable {
 
   @override
   List<Object> get props => [status];
+
+  FontPickerState copyWith({
+    NetworkStatus? status,
+  }) {
+    return FontPickerState(
+      status: status ?? this.status,
+    );
+  }
 }
 
 class FontPickerCubit extends Cubit<FontPickerState> {
@@ -19,7 +27,15 @@ class FontPickerCubit extends Cubit<FontPickerState> {
 
   final FontRepository fontRepository;
 
-  Future<String> pick() {
-    return fontRepository.pickFont();
+  Future<String> pick() async {
+    emit(state.copyWith(status: NetworkStatus.inProgress));
+    try {
+      final pick = await fontRepository.pickFont();
+      emit(state.copyWith(status: NetworkStatus.success));
+      return pick;
+    } catch (_) {
+      emit(state.copyWith(status: NetworkStatus.failure));
+      return '';
+    }
   }
 }

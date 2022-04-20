@@ -3,7 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:subtitle_wand/widgets/project/color_picker_dialog.dart';
 
-import '../_helper/normalizer_test.dart';
+import '../../_helper/normalizer_test.dart';
 
 void main() {
   // staturation: white to red, hue: color rotation, value: white to black(lighting)
