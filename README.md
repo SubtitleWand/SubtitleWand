@@ -34,6 +34,37 @@ Subtitle Wand has two methods, one is to target on embedding whole subtitles spl
 3. Check If there is ffmpeg in enviroment variable, and export.
 4. Enjoy life.
 
+## How to open releases
+
+### Windows
+
+No need any extra knowledge.
+
+### Linux (x64/Amd)
+
+#### Option 1. Use `dpkg`
+
+```
+sudo dpkg -i linux_the_file.deb
+/usr/local/lib/minecraft_cube_desktop/minecraft_cube_desktop
+```
+
+> Note: The Path you currently used in terminal will be the root directory for the app, please decide the directory, and use `cd`, then execute the last command above.
+
+#### Option 2. Use `dpkg-deb`
+
+`dpkg-deb -x $DEBFILE $TARGET_DIRECTORY`, then open _mineraft_cube_desktop_ in the target directory.
+Don't forget to `chmod -R 755` the direcotry or use open mineraft_cube_desktop as `sudo`.
+
+### Macos
+
+```
+chmod -R 755 minecraft_cube_desktop.app
+```
+
+and `open ./minecraft_cube_des
+
+
 ## Compile
 Before you can compile Subtitle Wand, you must have following prerequisite:
 1. [flutter](https://flutter.dev/docs/get-started/install) - Best cross-platform framework
