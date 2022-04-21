@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:launcher_repository/launcher_repository.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
 
@@ -27,7 +27,7 @@ class CoffeeDialog extends StatelessWidget {
                 const Icon(Icons.star, color: Colors.yellow),
                 const SizedBox(width: 8),
                 Text(
-                  'Support',
+                  'Support the project',
                   style: Theme.of(context)
                       .textTheme
                       .headline5
@@ -44,13 +44,13 @@ class CoffeeDialog extends StatelessWidget {
               text: TextSpan(
                 style: contentStyle,
                 children: [
-                  const TextSpan(text: 'Leave a  '),
+                  const TextSpan(text: 'Please Leave '),
                   const WidgetSpan(
                     child: Icon(Icons.star, color: Colors.yellow),
                   ),
-                  const TextSpan(text: ' '),
+                  const TextSpan(text: ' on '),
                   TextSpan(
-                    text: 'here',
+                    text: 'github',
                     style:
                         const TextStyle(decoration: TextDecoration.underline),
                     recognizer: TapGestureRecognizer()
@@ -60,32 +60,32 @@ class CoffeeDialog extends StatelessWidget {
                         context.read<LauncherRepository>().launch(path: url);
                       },
                   ),
-                  const TextSpan(text: ', is a good support for the project '),
-                  const WidgetSpan(
-                    child: Icon(
-                      Icons.sentiment_satisfied,
-                      color: Colors.yellow,
-                    ),
-                  ),
-                  const TextSpan(text: '.\n\nOr '),
-                  const TextSpan(text: 'Click '),
-                  WidgetSpan(
-                    child: GestureDetector(
-                      child: const FaIcon(
-                        FontAwesomeIcons.mugSaucer,
-                        color: Colors.brown,
-                      ),
-                      onTap: () async {
-                        const url = 'https://fxhome.com/hitfilm-express';
-                        context.read<LauncherRepository>().launch(path: url);
-                      },
-                    ),
-                  ),
-                  const TextSpan(text: ' to support the project :D\n\n'),
-                  const TextSpan(
-                    text: '(Support paypal, ecpay)',
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  const TextSpan(text: ' for supporting the project. '),
+                  // const WidgetSpan(
+                  //   child: Icon(
+                  //     Icons.sentiment_satisfied,
+                  //     color: Colors.yellow,
+                  //   ),
+                  // ),
+                  // const TextSpan(text: '.\n\nOr '),
+                  // const TextSpan(text: 'Click '),
+                  // WidgetSpan(
+                  //   child: GestureDetector(
+                  //     child: const FaIcon(
+                  //       FontAwesomeIcons.mugSaucer,
+                  //       color: Colors.brown,
+                  //     ),
+                  //     onTap: () async {
+                  //       const url = 'https://fxhome.com/hitfilm-express';
+                  //       context.read<LauncherRepository>().launch(path: url);
+                  //     },
+                  //   ),
+                  // ),
+                  // const TextSpan(text: ' to support the project :D\n\n'),
+                  // const TextSpan(
+                  //   text: '(Support paypal, ecpay)',
+                  //   style: TextStyle(fontSize: 12),
+                  // ),
                 ],
               ),
             ),
