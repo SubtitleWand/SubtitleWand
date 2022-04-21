@@ -105,7 +105,7 @@ class _FooterViewState extends State<FooterView> {
                     position: BadgePosition.topEnd(end: -5, top: -15),
                     shape: BadgeShape.square,
                     borderRadius: BorderRadius.circular(8),
-                    showBadge: true,
+                    showBadge: state.hasGreaterVersion,
                     child: InkWell(
                       child: const Text(
                         'Version: $packageVersion',
