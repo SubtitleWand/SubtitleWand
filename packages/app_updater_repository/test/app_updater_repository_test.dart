@@ -44,7 +44,7 @@ void main() {
         expect(
           verify(() => dio.get(captureAny())).captured,
           [
-            'https://raw.githubusercontent.com/MinecraftCube/MinecraftCubeDesktop/version_info/version'
+            'https://raw.githubusercontent.com/SubtitleWand/SubtitleWand/version_info/version'
           ],
         );
       });

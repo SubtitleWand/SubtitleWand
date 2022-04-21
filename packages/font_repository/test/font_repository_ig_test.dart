@@ -1,3 +1,5 @@
+@Tags(['integration'])
+
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
