@@ -1,4 +1,6 @@
+import 'package:app_updater_repository/app_updater_repository.dart';
 import 'package:desktop_window/desktop_window.dart';
+import 'package:dio/dio.dart';
 import 'package:ffmpeg_repository/ffmpeg_repository.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
@@ -24,7 +26,9 @@ void main(List<String> args) async {
   const fileSystem = LocalFileSystem();
   const processManager = LocalProcessManager();
   final picker = FilePicker.platform;
+  final dio = Dio();
 
+  final appUpdaterRepo = AppUpdaterRepository(dio: dio);
   final ffmpegRepo =
       FFmpegRepository(fileSystem: fileSystem, processManager: processManager);
   final fontRepo = FontRepository(fileSystem: fileSystem, picker: picker);
@@ -49,6 +53,7 @@ void main(List<String> args) async {
       launcherRepo: launcherRepo,
       srtRepo: srtRepo,
       imageRepo: imageRepo,
+      appUpdaterRepo: appUpdaterRepo,
     ),
   );
 

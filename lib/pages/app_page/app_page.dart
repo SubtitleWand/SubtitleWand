@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with subtitle-wand.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'package:app_updater_repository/app_updater_repository.dart';
 import 'package:ffmpeg_repository/ffmpeg_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,12 +35,14 @@ class SubtitleWandApp extends StatelessWidget {
     required this.launcherRepo,
     required this.srtRepo,
     required this.imageRepo,
+    required this.appUpdaterRepo,
   }) : super(key: key);
   final FFmpegRepository ffmpegRepo;
   final FontRepository fontRepo;
   final LauncherRepository launcherRepo;
   final SrtRepository srtRepo;
   final ImageRepository imageRepo;
+  final AppUpdaterRepository appUpdaterRepo;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +53,7 @@ class SubtitleWandApp extends StatelessWidget {
         RepositoryProvider.value(value: launcherRepo),
         RepositoryProvider.value(value: srtRepo),
         RepositoryProvider.value(value: imageRepo),
+        RepositoryProvider.value(value: appUpdaterRepo),
       ],
       child: const SubtitleWandAppView(),
     );

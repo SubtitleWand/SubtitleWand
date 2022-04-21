@@ -21,6 +21,8 @@ dependencies:
   utf: ^0.9.0+5
   flutter_colorpicker: ^1.0.3
   configurable_expansion_tile_null_safety: ^2.0.0
+  badges: ^2.0.2
+  dio: ^4.0.6
   file_picker:
     git:
       url: https://github.com/Tokenyet/flutter_file_picker.git
