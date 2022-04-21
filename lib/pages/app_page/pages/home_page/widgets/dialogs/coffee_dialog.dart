@@ -1,8 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:launcher_repository/launcher_repository.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CoffeeDialog extends StatelessWidget {
   const CoffeeDialog({Key? key}) : super(key: key);
@@ -56,9 +57,7 @@ class CoffeeDialog extends StatelessWidget {
                       ..onTap = () async {
                         const url =
                             'https://github.com/SubtitleWand/SubtitleWand';
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        }
+                        context.read<LauncherRepository>().launch(path: url);
                       },
                   ),
                   const TextSpan(text: ', is a good support for the project '),
@@ -77,10 +76,8 @@ class CoffeeDialog extends StatelessWidget {
                         color: Colors.brown,
                       ),
                       onTap: () async {
-                        const url = 'https://subtitlewand.github.io/donation';
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        }
+                        const url = 'https://fxhome.com/hitfilm-express';
+                        context.read<LauncherRepository>().launch(path: url);
                       },
                     ),
                   ),

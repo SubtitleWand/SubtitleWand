@@ -1,8 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:launcher_repository/launcher_repository.dart';
 import 'package:subtitle_wand/_gen/version.gen.dart';
 import 'package:subtitle_wand/design/color_palette.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AppAboutDialog extends StatelessWidget {
   const AppAboutDialog({Key? key}) : super(key: key);
@@ -45,9 +46,7 @@ class AppAboutDialog extends StatelessWidget {
                     ..onTap = () async {
                       const url =
                           'https://github.com/SubtitleWand/SubtitleWand';
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      }
+                      context.read<LauncherRepository>().launch(path: url);
                     },
                 ),
                 TextSpan(text: '  v$packageVersion', style: style),
@@ -65,7 +64,7 @@ class AppAboutDialog extends StatelessWidget {
                 children: [
                   const TextSpan(
                     text:
-                        'This is a project inspired my favorite video editor, ',
+                        'The project is inspired by my favorite video editor, ',
                   ),
                   TextSpan(
                     text: 'Hitfilm',
@@ -75,9 +74,7 @@ class AppAboutDialog extends StatelessWidget {
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
                         const url = 'https://fxhome.com/hitfilm-express';
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        }
+                        context.read<LauncherRepository>().launch(path: url);
                       },
                   ),
                   const TextSpan(text: '.\n'),
@@ -94,9 +91,7 @@ class AppAboutDialog extends StatelessWidget {
                       ..onTap = () async {
                         const url =
                             'https://github.com/SubtitleWand/SubtitleWand/issues/new/choose';
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        }
+                        context.read<LauncherRepository>().launch(path: url);
                       },
                   ),
                   const TextSpan(text: '. '),

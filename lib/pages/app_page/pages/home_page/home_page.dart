@@ -34,7 +34,6 @@ import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/footer.dart
 import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/header.dart';
 import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_attribute_panel.dart';
 import 'package:subtitle_wand/pages/app_page/pages/home_page/widgets/subtitle_canvas/subtitle_canvas.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:wand_api/wand_api.dart';
 
 class HomePage extends StatelessWidget {
@@ -228,12 +227,9 @@ class _HomePageViewState extends State<HomePageView>
                                 ..onTap = () async {
                                   const url =
                                       'https://ffmpeg.org/download.html';
-                                  if (await canLaunch(url)) {
-                                    await launch(
-                                      url,
-                                      forceSafariVC: false,
-                                    );
-                                  }
+                                  context
+                                      .read<LauncherRepository>()
+                                      .launch(path: url);
                                 },
                             ),
                             const TextSpan(
