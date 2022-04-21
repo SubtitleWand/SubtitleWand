@@ -1,4 +1,4 @@
-<img src="./icon.png" width="170" align="right">
+<img src="./resources/icon.png" width="170" align="right">
 
 # Subtitle Wand - An image-based subtitle generator that can be easily and rapidly integrated with any video editing program.
 
