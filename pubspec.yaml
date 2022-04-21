@@ -58,6 +58,8 @@ dependencies:
       ref: 03d957e8b5c99fc83cd4a781031b154ab3de8753
 
   # private
+  app_updater_repository:
+    path: packages/app_updater_repository
   image_repository:
     path: packages/image_repository
   ffmpeg_repository:
