@@ -42,9 +42,9 @@ jobs:
       # There is no option to stop actions/download-artifact@v3 extracting by default...
       - name: Compress back to zip
         run: |
-          zip -r windows-release-${{ github.ref_name }}.zip minecraft_cube_desktop
-          zip -r macos-release-${{ github.ref_name }}.zip minecraft_cube_desktop.app
-          zip linux-release-${{ github.ref_name }}.zip minecraft_cube_desktop.deb
+          zip -r windows-release-${{ github.ref_name }}.zip subtitle_wand
+          zip -r macos-release-${{ github.ref_name }}.zip subtitle_wand.app
+          zip linux-release-${{ github.ref_name }}.zip subtitle_wand.deb
       - name: Check Directory
         run: |
           ls -R

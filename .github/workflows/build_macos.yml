@@ -30,11 +30,11 @@ jobs:
           flutter build -v ${{ env.MACHINE_OS }} --release	
       - name: Copy essentials to Macos and package (Release)
         run: |
-          mkdir ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop
-          mv ${{ github.workspace }}/build/macos/Build/Products/Release/minecraft_cube_desktop.app ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop/minecraft_cube_desktop.app
+          mkdir ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand
+          mv ${{ github.workspace }}/build/macos/Build/Products/Release/subtitle_wand.app ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand/subtitle_wand.app
       - name: Upload MacOS artifaces (Release)
         # if: startsWith(matrix.os, 'macOS')
         uses: actions/upload-artifact@v3
         with:
           name: macos-release-${{ inputs.postfix }}
-          path: ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop
+          path: ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand

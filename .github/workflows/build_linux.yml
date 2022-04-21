@@ -35,11 +35,11 @@ jobs:
           flutter build -v ${{ env.MACHINE_OS }} --release	
       - name: Copy essentials to Linux artifacs and package (Release)
         run: |
-          cp -r ${{ github.workspace }}/build_dependencies/linux ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop
-          mv ${{ github.workspace }}/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop/usr/local/lib/minecraft_cube_desktop/
-          dpkg-deb --build --root-owner-group ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop
+          cp -r ${{ github.workspace }}/build_dependencies/linux ${{ github.workspace }}/build/linux/x64/release/subtitle_wand
+          mv ${{ github.workspace }}/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/subtitle_wand/usr/local/lib/subtitle_wand/
+          dpkg-deb --build --root-owner-group ${{ github.workspace }}/build/linux/x64/release/subtitle_wand
       - name: Upload Linux artifaces (Release)
         uses: actions/upload-artifact@v3
         with:
           name: linux-release-${{ inputs.postfix }}
-          path: ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop.deb
+          path: ${{ github.workspace }}/build/linux/x64/release/subtitle_wand.deb

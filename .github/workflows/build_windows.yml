@@ -31,10 +31,10 @@ jobs:
       - name: Copy essentials to Windows artifacs (Release)
         run: |
           cp -Path ${{ github.workspace }}/build_dependencies/windows/* ${{ github.workspace }}/build/windows/runner/Release/
-          mkdir ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop/minecraft_cube_desktop
-          mv -Path ${{ github.workspace }}/build/windows/runner/Release/* ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop/minecraft_cube_desktop
+          mkdir ${{ github.workspace }}/build/windows/runner/subtitle_wand/subtitle_wand
+          mv -Path ${{ github.workspace }}/build/windows/runner/Release/* ${{ github.workspace }}/build/windows/runner/subtitle_wand/subtitle_wand
       - name: Upload Windows artifaces (Release)
         uses: actions/upload-artifact@v3
         with:
           name: windows-release-${{ inputs.postfix }}
-          path: ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop
+          path: ${{ github.workspace }}/build/windows/runner/subtitle_wand

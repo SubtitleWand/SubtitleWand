@@ -39,13 +39,13 @@ jobs:
       - name: Copy essentials to Windows artifacs (Release)
         run: |
           cp -Path ${{ github.workspace }}/build_dependencies/windows/* ${{ github.workspace }}/build/windows/runner/Release/
-          mkdir ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop/minecraft_cube_desktop
-          mv -Path ${{ github.workspace }}/build/windows/runner/Release/* ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop/minecraft_cube_desktop
+          mkdir ${{ github.workspace }}/build/windows/runner/subtitle_wand/subtitle_wand
+          mv -Path ${{ github.workspace }}/build/windows/runner/Release/* ${{ github.workspace }}/build/windows/runner/subtitle_wand/subtitle_wand
       - name: Upload Windows artifaces (Release)
         uses: actions/upload-artifact@v3
         with:
           name: windows-release-${{ github.sha }}
-          path: ${{ github.workspace }}/build/windows/runner/minecraft_cube_desktop
+          path: ${{ github.workspace }}/build/windows/runner/subtitle_wand
   build_ubuntu:
     if: ${{ inputs.os == 'linux' }}
     runs-on: ubuntu-latest
@@ -74,14 +74,14 @@ jobs:
           flutter build -v ${{ env.MACHINE_OS }} --release	
       - name: Copy essentials to Linux artifacs and package (Release)
         run: |
-          cp -r ${{ github.workspace }}/build_dependencies/linux ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop
-          mv ${{ github.workspace }}/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop/usr/local/lib/minecraft_cube_desktop/
-          dpkg-deb --build --root-owner-group ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop
+          cp -r ${{ github.workspace }}/build_dependencies/linux ${{ github.workspace }}/build/linux/x64/release/subtitle_wand
+          mv ${{ github.workspace }}/build/linux/x64/release/bundle/* ${{ github.workspace }}/build/linux/x64/release/subtitle_wand/usr/local/lib/subtitle_wand/
+          dpkg-deb --build --root-owner-group ${{ github.workspace }}/build/linux/x64/release/subtitle_wand
       - name: Upload Linux artifaces (Release)
         uses: actions/upload-artifact@v3
         with:
           name: linux-release-${{ github.sha }}
-          path: ${{ github.workspace }}/build/linux/x64/release/minecraft_cube_desktop.deb
+          path: ${{ github.workspace }}/build/linux/x64/release/subtitle_wand.deb
   build_macos:
     if: ${{ inputs.os == 'macos' }}
     runs-on: macos-latest
@@ -105,11 +105,11 @@ jobs:
           flutter build -v ${{ env.MACHINE_OS }} --release	
       - name: Copy essentials to Macos and package (Release)
         run: |
-          mkdir ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop
-          mv ${{ github.workspace }}/build/macos/Build/Products/Release/minecraft_cube_desktop.app ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop/minecraft_cube_desktop.app
+          mkdir ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand
+          mv ${{ github.workspace }}/build/macos/Build/Products/Release/subtitle_wand.app ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand/subtitle_wand.app
       - name: Upload MacOS artifaces (Release)
         # if: startsWith(matrix.os, 'macOS')
         uses: actions/upload-artifact@v3
         with:
           name: macos-release-${{ github.sha }}
-          path: ${{ github.workspace }}/build/macos/Build/Products/minecraft_cube_desktop
+          path: ${{ github.workspace }}/build/macos/Build/Products/subtitle_wand
