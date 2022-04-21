@@ -98,10 +98,6 @@ jobs:
       MACHINE_OS: macos
     runs-on: macos-latest
     steps:
-      - name: Test (TODO removed)
-        run : |
-          top -l 1 -s 0 | grep PhysMem | awk '{print $2}'
-          top -l 1 -s 0 | grep PhysMem | awk '{print $6}'
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2.3.0
         with:
@@ -119,6 +115,8 @@ jobs:
       MACHINE_OS: windows
     runs-on: windows-latest
     steps:
+      - uses: FedericoCarboni/setup-ffmpeg@v1
+        id: setup-ffmpeg
       - uses: subosito/flutter-action@v2.3.0
         with:
           channel: 'stable'
@@ -135,6 +133,8 @@ jobs:
       MACHINE_OS: linux
     runs-on: ubuntu-latest
     steps:
+      - uses: FedericoCarboni/setup-ffmpeg@v1
+        id: setup-ffmpeg
       - uses: subosito/flutter-action@v2.3.0
         with:
           channel: 'stable'
@@ -151,6 +151,8 @@ jobs:
       MACHINE_OS: macos
     runs-on: macos-latest
     steps:
+      - uses: FedericoCarboni/setup-ffmpeg@v1
+        id: setup-ffmpeg
       - uses: subosito/flutter-action@v2.3.0
         with:
           channel: 'stable'
