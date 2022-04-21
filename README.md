@@ -69,9 +69,9 @@ and `open ./subtitle_wand` in terminal, or just double click.
 Before you can compile Subtitle Wand, you must have following prerequisite:
 1. [flutter](https://flutter.dev/docs/get-started/install) - Best cross-platform framework
 
-~~ 2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang ~~
+~~2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang~~
 
-~~ All prepared, you could use `hover run` to run the project. ~~
+~~All prepared, you could use `hover run` to run the project.~~
 
 ## Contribute
 Fork the project, and follow the [CONTRIBUTING.md](CONTRIBUTING.md).
