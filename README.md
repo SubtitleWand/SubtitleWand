@@ -54,7 +54,7 @@ sudo dpkg -i linux_the_file.deb
 #### Option 2. Use `dpkg-deb`
 
 `dpkg-deb -x $DEBFILE $TARGET_DIRECTORY`, then open _subtitle_wand_ in the target directory.
-Don't forget to `chmod -R 755` the direcotry or use open mineraft_cube_desktop as `sudo`.
+Don't forget to `chmod -R 755` the direcotry or use open subtitle_wand as `sudo`.
 
 ### Macos
 
@@ -62,15 +62,16 @@ Don't forget to `chmod -R 755` the direcotry or use open mineraft_cube_desktop a
 chmod -R 755 subtitle_wand.app
 ```
 
-and `open ./subtitle_wand
+and `open ./subtitle_wand` in terminal, or just double click.
 
 
 ## Compile
 Before you can compile Subtitle Wand, you must have following prerequisite:
 1. [flutter](https://flutter.dev/docs/get-started/install) - Best cross-platform framework
-~ 2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang ~
 
-~ All prepared, you could use `hover run` to run the project. ~
+~~ 2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang ~~
+
+~~ All prepared, you could use `hover run` to run the project. ~~
 
 ## Contribute
 Fork the project, and follow the [CONTRIBUTING.md](CONTRIBUTING.md).
