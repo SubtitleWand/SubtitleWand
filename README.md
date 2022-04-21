@@ -8,16 +8,17 @@
 
 [![downloads](https://img.shields.io/github/downloads/SubtitleWand/SubtitleWand/total)](https://github.com/SubtitleWand/SubtitleWand/releases)
 
-[DEMO](https://www.youtube.com/watch?v=BeSdYeeK4QU)
-
 
 ## About SubtitleWand
 
 This is a universal solution for subtitle to video maker, such as Windows Movie Maker/Sony vegas/ Hitfilm. The motivation is that [Hitfilm](https://fxhome.com/hitfilm-express) do not have a proper way to add subtitle as fast as possible, and the workarounds, Multiple Compisite Shot, One Shot with line moving/masking, Subtitle plugin are fairly tricky and tired for me.
 
-Subtitle Wand is to target on embedding one subtitle per frame to optimize perfomance, and user could slow the duration to get fully controll on each subtitle.
+Subtitle Wand has two methods, one is to target on embedding whole subtitles splited by frame to optimize perfomance, and user could slow the duration to get fully controll on each subtitle. Another is to export video with SRT, required ffmpeg installed, tho.
 
 ## How to use
+
+#### Image squence
+[DEMO](https://www.youtube.com/watch?v=BeSdYeeK4QU)
 1. Select a ttf to your subtitle.
 2. Enter subtitles in **text**, one line per frame. (configue any property you want)
 3. Save images and wait to complete. (generate a sequence of image, you could import It with any maker that supported **Image Sequence**)
@@ -25,6 +26,13 @@ Subtitle Wand is to target on embedding one subtitle per frame to optimize perfo
 5. Import Image sequence in **Hitfilm**, and make slow the full shot to 0.5% duration (1 frame to 200 frame per subtitle), and drag It to timeline, you might move the position first before next step.
 6. Lock all other layers excpet subtitle layer, Execute **200frameHitfilm.ahk** to slice automatically (**F3** to start, **Esc** to stop), If you are not using hitfilm, you should write It by hand, and If you think It's useful, welcome to feedback the script, issue or pull-request is welcome.
 7. Enjoy your consistent and pre-generated subtitles, the last work is move It to correct timeline, no more.
+
+#### SRT & Video export
+[DEMO](https://youtu.be/HVXg0PPOl3Y)
+1. Select a ttf.
+2. Select a SRT.
+3. Check If there is ffmpeg in enviroment variable, and export.
+4. Enjoy life.
 
 ## Compile
 Before you can compile Subtitle Wand, you must have following prerequisite:
