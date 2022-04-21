@@ -46,37 +46,37 @@ No need any extra knowledge.
 
 ```
 sudo dpkg -i linux_the_file.deb
-/usr/local/lib/minecraft_cube_desktop/minecraft_cube_desktop
+/usr/local/lib/subtitle_wand/subtitle_wand
 ```
 
 > Note: The Path you currently used in terminal will be the root directory for the app, please decide the directory, and use `cd`, then execute the last command above.
 
 #### Option 2. Use `dpkg-deb`
 
-`dpkg-deb -x $DEBFILE $TARGET_DIRECTORY`, then open _mineraft_cube_desktop_ in the target directory.
+`dpkg-deb -x $DEBFILE $TARGET_DIRECTORY`, then open _subtitle_wand_ in the target directory.
 Don't forget to `chmod -R 755` the direcotry or use open mineraft_cube_desktop as `sudo`.
 
 ### Macos
 
 ```
-chmod -R 755 minecraft_cube_desktop.app
+chmod -R 755 subtitle_wand.app
 ```
 
-and `open ./minecraft_cube_des
+and `open ./subtitle_wand
 
 
 ## Compile
 Before you can compile Subtitle Wand, you must have following prerequisite:
 1. [flutter](https://flutter.dev/docs/get-started/install) - Best cross-platform framework
-2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang 
+~ 2. [go-flutter](https://github.com/go-flutter-desktop/go-flutter) embeddeder for desktop powered by golang ~
 
-All prepared, you could use `hover run` to run the project.
+~ All prepared, you could use `hover run` to run the project. ~
 
 ## Contribute
 Fork the project, and follow the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Support
-Leave a ⭐️ is a good support for the project ☺️, Or [donation](https://subtitlewand.github.io/donation) is also a good choice 👍
+If you like the project, leave ⭐️ for supporting the project ☺️
 
 ## Maintainers
 - [Tokenyet](https://github.com/Tokenyet)
